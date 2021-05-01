@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "ES2018",
+      "DOM"
+    ],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "ESNext",
+    "noImplicitAny": true,
+    "strict": true,
+    "resolveJsonModule": true,
+    "pretty": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "api/**/*",
+    "modules/**/*",
+    "index.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/node_modules/*"
+  ]
+}
