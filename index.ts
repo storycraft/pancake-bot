@@ -39,10 +39,12 @@ async function main(credential: BotCredential) {
     try {
         await Promise.all([
             loader.load('chat'),
-            loader.load('console-util', { profile: {} as OpenLinkProfiles }),
+            loader.load('util', { profile: {} as OpenLinkProfiles }),
             loader.load('man'),
             loader.load('misc'),
             loader.load('open-channel-manager'),
+            loader.load('inspect'),
+            loader.load('pixiv', { api: { username: process.env['BOT_PIXIV_USERNAME'], password: process.env['BOT_PIXIV_PWD'] } }),
         ]);
     } catch (err) {
         logger.fatal(`모듈 로딩중 오류가 발생했습니다. err: ${err}`);
@@ -63,8 +65,8 @@ async function main(credential: BotCredential) {
 }
 
 main({
-    deviceName: process.env['BOT_DEVICE_NAME'] || '',
-    deviceUUID: process.env['BOT_DEVICE_UUID'] || '',
-    email: process.env['BOT_ACCOUNT_EMAIL'] || '',
-    password: process.env['BOT_ACCOUNT_PWD'] || ''
+    deviceName: process.env['BOT_DEVICE_NAME'] || 'Pancake',
+    deviceUUID: process.env['BOT_DEVICE_UUID'] || 'MGEyOGY3YTMtMDkyOC00ZmQ5LTk2NTUtZGFjZDVmNDFmZmQ3fHBhbmNha2VfaXNfc29fbXVjaF9kZWxpY2lvdXM=',
+    email: process.env['BOT_ACCOUNT_EMAIL'] || '+15055104801',
+    password: process.env['BOT_ACCOUNT_PWD'] || 'tmxhflzmfovmxm.8814'
 }).then();
