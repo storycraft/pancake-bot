@@ -45,6 +45,7 @@ async function main(credential: BotCredential) {
             loader.load('open-channel-manager'),
             loader.load('inspect'),
             loader.load('pixiv', { api: { username: process.env['BOT_PIXIV_USERNAME'], password: process.env['BOT_PIXIV_PWD'] } }),
+            loader.load('sudo'),
         ]);
     } catch (err) {
         logger.fatal(`모듈 로딩중 오류가 발생했습니다. err: ${err}`);
@@ -53,7 +54,6 @@ async function main(credential: BotCredential) {
 
     logger.info('봇이 시작되었습니다');
 
-    process.stdin.unref();
     const iface = readline.createInterface(process.stdin, process.stdout, undefined, true);
 
     iface.setPrompt('> ');

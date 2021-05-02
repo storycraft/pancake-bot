@@ -133,6 +133,14 @@ export class Bot extends TypedEmitter<BotEvents> {
         return this._config;
     }
 
+    get chatParser(): CommandParser {
+        return this._chatParser;
+    }
+
+    get consoleParser(): CommandParser {
+        return this._consoleParser;
+    }
+
     /**
      * 주어진 문자열을 콘솔 명령으로 실행
      *
