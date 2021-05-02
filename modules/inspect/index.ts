@@ -4,7 +4,7 @@
  * Copyright (c) storycraft. Licensed under the MIT Licence.
 */
 
-import { ChatBuilder, KnownChatType, KnownLinkPrivilegeMask, Long, ReplyAttachment, ReplyContent, TalkChannel, TalkNormalChannel, TalkOpenChannel } from "node-kakao";
+import { ChatBuilder, KnownChatType, KnownLinkPrivilegeMask, Long, ReplyAttachment, ReplyContent, TalkChannel, TalkNormalChannel, TalkOpenChannel, util } from "node-kakao";
 import { BotModule, ModuleDescriptor, TalkContext } from "../../api/bot";
 import { ChatCmdListener, CommandInfo } from "../../api/command";
 import * as OpenChannelPerms from "../../api/open-channel-perms";
@@ -232,8 +232,8 @@ async function chatInspect(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
                 `type: ${chat.type}\n` + 
                 `text: ${chat.text}\n` + 
                 `sender.userId: ${chat.sender.userId}\n` +
-                `attachment: ${chat.attachment}\n` + 
-                `supplement: ${chat.supplement}\n` + 
+                `attachment: ${util.JsonUtil.stringifyLoseless(chat.attachment || {})}\n` + 
+                `supplement: ${util.JsonUtil.stringifyLoseless(chat.supplement || {})}\n` + 
                 `messageId: ${chat.messageId}`;
 
     await ctx.channel.sendMedia(KnownChatType.TEXT, {
