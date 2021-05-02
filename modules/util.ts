@@ -81,12 +81,12 @@ export default function moduleInit(mod: BotModule, options: UtilOptions) {
                     return;
                 }
 
-                const separator = info.args.indexOf(';');
+                const separator = info.args.lastIndexOf(';');
 
                 const { url, passcode }: { url: string, passcode?: string } =
                 separator < 0
                 ? { url: info.args }
-                : { url: info.args.slice(0, separator), passcode: info.args.slice(separator) };
+                : { url: info.args.slice(0, separator), passcode: info.args.slice(separator + 1) };
 
                 const openChannelList = mod.bot.client.channelList.open;
 
