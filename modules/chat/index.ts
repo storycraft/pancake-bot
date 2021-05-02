@@ -4,7 +4,7 @@
  * Copyright (c) storycraft. Licensed under the MIT Licence.
  */
 
-import { TalkChannel, util } from "node-kakao";
+import { KnownChatType, ReplyAttachment, TalkChannel, TalkChatData, util } from "node-kakao";
 import { BotModule, ModuleDescriptor, TalkContext } from "../../api/bot";
 import { Logger } from "../../api/logger";
 import FileAsync from 'lowdb/adapters/FileAsync';
@@ -12,6 +12,8 @@ import low from 'lowdb';
 import * as path from 'path';
 import { ensureFile } from "fs-extra";
 import { ChatFilterManager } from "./filter";
+import * as OpenChannelPerms from '../../api/open-channel-perms';
+import { ChatCmdListener } from "../../api/command";
 
 export const MODULE_DESC: ModuleDescriptor = {
 
@@ -24,6 +26,59 @@ export const MODULE_DESC: ModuleDescriptor = {
 
 export default async function moduleInit(mod: BotModule) {
     mod.on('chat', (ctx) => logChat(ctx, mod.logger));
+    mod.commandHandler.any.addListener(
+        new ChatCmdListener(
+            ['chatlog', 'chatlogs'],
+            { usage: 'chatlog [채팅 수]', description: '선택된 채팅 이전의 채팅을 최대 300개까지 가져옵니다. 기본: 50', executeLevel: OpenChannelPerms.MANAGERS },
+            async (info, ctx) => {
+                let logId;
+                if (ctx.data.originalType === KnownChatType.REPLY) {
+                    const reply = ctx.data.attachment<ReplyAttachment>();
+                    if (reply['src_logId']) {
+                        logId = reply['src_logId'];
+                    } else {
+                        await ctx.channel.sendChat('채팅 정보를 가져오는데 실패했습니다');
+                        return;
+                    }
+                }
+
+                if (!logId) {
+                    await ctx.channel.sendChat('답장 기능을 통해 채팅을 선택해주세요');
+                    return;
+                }
+
+                let count;
+
+                if (info.args.length > 0) {
+                    count = Number.parseInt(info.args);
+                }
+
+                if (!count || isNaN(count)) count = 50;
+
+                const iter = ctx.channel.chatListStore.before(logId, count);
+
+                let text = `${ctx.channel.getDisplayName()} 챗 기록\n\n`;
+                let i = 0;
+                for await (const chat of iter) {
+                    const data = new TalkChatData(chat);
+                    const info = data.getSenderInfo(ctx.channel);
+                    const name = info ? info.nickname : '(알수없음)';
+
+                    text += `(${i}) [${new Date(chat.sendAt).toLocaleString()}] (logId: ${chat.logId}) ${name} (senderId: ${chat.sender.userId}) (type: ${data.originalType}) ${data.isDeleted() ? '(deleted)' : ''}: ${chat.text}\n`;
+                    if (chat.attachment && Object.keys(chat.attachment).length > 0) {
+                        text += `attachment: ${util.JsonUtil.stringifyLoseless(chat.attachment)}\n`;
+                    }
+                    i++;
+                }
+
+                await ctx.channel.sendMedia(KnownChatType.TEXT, {
+                    data: Buffer.from(text),
+                    name: 'log.txt',
+                    ext: 'txt'
+                });
+            }
+        )
+    )
 
     const filterDBPath = path.join(mod.dataDir, 'filters.json');
     await ensureFile(filterDBPath);
