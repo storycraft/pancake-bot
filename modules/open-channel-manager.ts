@@ -4,7 +4,7 @@
  * Copyright (c) storycraft. Licensed under the MIT Licence.
  */
 
-import { ChannelUser, ChatBuilder, KnownChatType, Long, OpenChannelUserPerm, ReplyAttachment, TalkOpenChannel } from "node-kakao";
+import { ChannelUser, ChatBuilder, KnownChatType, Long, OpenChannelUserPerm, ReplyAttachment, ReplyContent, TalkOpenChannel } from "node-kakao";
 import { BotModule, ModuleDescriptor, TalkContext } from "../api/bot";
 import { ChatCmdListener, CommandInfo } from "../api/command";
 import * as OpenChannelPerms from "../api/open-channel-perms";
@@ -33,6 +33,8 @@ async function softKickCommand(info: CommandInfo, ctx: TalkContext<TalkOpenChann
     const builder = new ChatBuilder();
 
     const botInfo = ctx.channel.getUserInfo(ctx.bot.client.clientUser);
+
+    builder.append(new ReplyContent(ctx.data.chat));
     if (!botInfo || botInfo.perm !== OpenChannelUserPerm.MANAGER && botInfo.perm !== OpenChannelUserPerm.OWNER) {
         builder.text(`봇에 명령어를 실행할 권한이 없습니다`);
     } else {
