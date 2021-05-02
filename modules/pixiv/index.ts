@@ -31,6 +31,12 @@ export type ModuleOptions = {
 };
 
 export default function moduleInit(mod: BotModule, options: ModuleOptions) {
+    if (!options.api || !options.api.username || !options.api.password) {
+        mod.logger.warn('계정 정보가 제공되지 않았습니다. 모듈을 비활성화 합니다.');
+        mod.bot.unloadModule(mod.id);
+        return;
+    }
+
     const api = new PixivApi(new PixivApp(options.api.username, options.api.password));
 
     mod.commandHandler.any.addListener(

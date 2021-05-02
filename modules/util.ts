@@ -4,7 +4,7 @@
  * Copyright (c) storycraft. Licensed under the MIT Licence.
  */
 
-import { Long, OpenLinkProfiles, TalkNormalChannel, TalkOpenChannel } from "node-kakao";
+import { Long, OpenChannelUserPerm, OpenLinkProfiles, TalkNormalChannel, TalkOpenChannel } from "node-kakao";
 import { BotModule, ModuleDescriptor } from "../api/bot";
 import { ChatCmdListener, CommandInfo, ConsoleCmdListener } from "../api/command";
 import * as OpenChannelPerms from '../api/open-channel-perms';
@@ -41,7 +41,7 @@ export default function moduleInit(mod: BotModule, options: UtilOptions) {
     mod.commandHandler.open.addListener(
         new ChatCmdListener(
             ['leave'],
-            { usage: 'leave', description: '봇을 오픈 채팅방에서 나가게 합니다', executeLevel: OpenChannelPerms.MANAGERS },
+            { usage: 'leave', description: '봇을 오픈 채팅방에서 나가게 합니다', executeLevel: OpenChannelUserPerm.OWNER },
             async (info, ctx) => {
                 const res = await ctx.bot.client.channelList.open.leaveChannel(ctx.channel);
                 if (!res.success) {
