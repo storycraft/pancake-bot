@@ -65,8 +65,8 @@ async function main(credential: BotCredential) {
 }
 
 main({
-    deviceName: process.env['BOT_DEVICE_NAME'] || 'Pancake',
-    deviceUUID: process.env['BOT_DEVICE_UUID'] || 'MGEyOGY3YTMtMDkyOC00ZmQ5LTk2NTUtZGFjZDVmNDFmZmQ3fHBhbmNha2VfaXNfc29fbXVjaF9kZWxpY2lvdXM=',
-    email: process.env['BOT_ACCOUNT_EMAIL'] || '+15055104801',
-    password: process.env['BOT_ACCOUNT_PWD'] || 'tmxhflzmfovmxm.8814'
+    deviceName: process.env['BOT_DEVICE_NAME'] || '',
+    deviceUUID: process.env['BOT_DEVICE_UUID'] || '',
+    email: process.env['BOT_ACCOUNT_EMAIL'] || '',
+    password: process.env['BOT_ACCOUNT_PWD'] || ''
 }).then();
