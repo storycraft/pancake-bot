@@ -66,7 +66,7 @@ async function openHelp(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
     const prefix = ctx.bot.config.commandPrefix;
 
     for (const mod of ctx.bot.allModule()) {
-        man += `${mod.name} (${mod.id})\n${constructHelpText(prefix, mod.commandHandler.openHelpMap())}\n`;
+        man += `${mod.name} (${mod.id})\n${constructHelpText(prefix, mod.commandHandler.openHelpMap())}`;
     }
 
     await ctx.channel.sendMedia(KnownChatType.TEXT, {
@@ -80,7 +80,7 @@ function consoleHelp(info: CommandInfo, ctx: ConsoleContext, logger: Logger) {
     let man = `명령어 도움말${'\u200b'.repeat(500)}\n\n`;
 
     for (const mod of ctx.bot.allModule()) {
-        man += `${mod.name} (${mod.id})\n${constructHelpText('', mod.commandHandler.consoleHelpMap())}\n`;
+        man += `${mod.name} (${mod.id})\n${constructHelpText('', mod.commandHandler.consoleHelpMap())}`;
     }
 
     logger.info(man);
