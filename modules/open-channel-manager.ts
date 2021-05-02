@@ -8,6 +8,7 @@ import { ChannelUser, ChatBuilder, KnownChatType, Long, OpenChannelUserPerm, Rep
 import { BotModule, ModuleDescriptor, TalkContext } from "../api/bot";
 import { ChatCmdListener, CommandInfo } from "../api/command";
 import * as OpenChannelPerms from "../api/open-channel-perms";
+import { getSelectedUsers } from "../api/util/chat";
 
 export const MODULE_DESC: ModuleDescriptor = {
 
@@ -35,30 +36,21 @@ async function softKickCommand(info: CommandInfo, ctx: TalkContext<TalkOpenChann
     if (!botInfo || botInfo.perm !== OpenChannelUserPerm.MANAGER && botInfo.perm !== OpenChannelUserPerm.OWNER) {
         builder.text(`봇에 명령어를 실행할 권한이 없습니다`);
     } else {
-        const targets: ChannelUser[] = [];
-
-        for (const mention of ctx.data.mentions) {
-            targets.push({ userId: Long.fromValue(mention.user_id) });
-        }
-    
-        if (ctx.data.originalType === KnownChatType.REPLY) {
-            const reply = ctx.data.attachment<ReplyAttachment>();
-            if (reply['src_userId']) {
-                targets.push({ userId: reply['src_userId'] });
-            }
-        }
+        const targets = getSelectedUsers(ctx.data);
 
         if (targets.length < 1) {
             builder.text(`선택된 유저가 없습니다`);
         } else {
+            let counter = 0;
             for (const user of targets) {
                 const kickRes = await ctx.channel.kickUser(user);
                 if (kickRes.success) {
                     await ctx.channel.removeKicked(user);
+                    counter++;
                 }
             }
     
-            builder.text(`${targets.length} 명을 소프트킥 했습니다`);
+            builder.text(`${counter} 명을 소프트킥 했습니다`);
         }
     }
 
