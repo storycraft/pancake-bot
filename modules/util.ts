@@ -81,7 +81,7 @@ export default function moduleInit(mod: BotModule, options: UtilOptions) {
                     return;
                 }
 
-                const separator = info.args.lastIndexOf(';');
+                const separator = info.args.indexOf(';');
 
                 const { url, passcode }: { url: string, passcode?: string } =
                 separator < 0
