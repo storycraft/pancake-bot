@@ -5,7 +5,6 @@
 */
 
 import { ChatBuilder, KnownChatType, KnownLinkPrivilegeMask, Long, ReplyAttachment, ReplyContent, TalkChannel, TalkNormalChannel, TalkOpenChannel } from "node-kakao";
-import { KnownChannelMetaType } from "node-kakao/dist/channel/meta";
 import { BotModule, ModuleDescriptor, TalkContext } from "../../api/bot";
 import { ChatCmdListener, CommandInfo } from "../../api/command";
 import * as OpenChannelPerms from "../../api/open-channel-perms";
@@ -47,7 +46,7 @@ export default function moduleInit(mod: BotModule) {
 
     mod.commandHandler.normal.addListener(
         new ChatCmdListener(
-            ['inspect-channel'],
+            ['inspect-user'],
             { usage: 'inspect-user', description: '유저 정보를 확인합니다' },
             normalChannelUserInspect
         )
@@ -65,7 +64,7 @@ export default function moduleInit(mod: BotModule) {
 async function normalChannelInspect(info: CommandInfo, ctx: TalkContext<TalkNormalChannel>) {
     const channel = ctx.channel;
 
-    const privilegeMeta = channel.info.metaMap[KnownChannelMetaType.PRIVILEGE];
+    const privilegeMeta = channel.info.metaMap[6];
     const privilegeContent = privilegeMeta && JSON.parse(privilegeMeta.content);
     const noticeLocked = privilegeContent && privilegeContent['pin_notice'] || false;
     const channelInfo = channel.info;
@@ -120,7 +119,7 @@ async function normalChannelUserInspect(info: CommandInfo, ctx: TalkContext<Talk
 async function openChannelInspect(info: CommandInfo, ctx: TalkContext<TalkOpenChannel>) {
     const channel = ctx.channel;
 
-    const privilegeMeta = channel.info.metaMap[KnownChannelMetaType.PRIVILEGE];
+    const privilegeMeta = channel.info.metaMap[6];
     const privilegeContent = privilegeMeta && JSON.parse(privilegeMeta.content);
     const noticeLocked = privilegeContent && privilegeContent['pin_notice'] || false;
     const channelInfo = channel.info;
