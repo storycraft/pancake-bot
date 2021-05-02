@@ -4,7 +4,7 @@
  * Copyright (c) storycraft. Licensed under the MIT Licence.
  */
 
-import { KnownChatType, TalkChannel } from "node-kakao";
+import { KnownChatType, OpenChannelUserPerm, TalkChannel, TalkOpenChannel } from "node-kakao";
 import { BotModule, ConsoleContext, ModuleDescriptor, TalkContext } from "../../api/bot";
 import { ChatCmdListener, CommandHelpMap, CommandInfo } from "../../api/command";
 import { Logger } from "../../api/logger";
@@ -50,7 +50,7 @@ async function normalHelp(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
     const prefix = ctx.bot.config.commandPrefix;
 
     for (const mod of ctx.bot.allModule()) {
-        man += `${mod.name} (${mod.id})\n${constructHelpText(prefix, mod.commandHandler.normalHelpMap())}`;
+        man += `${mod.name} (${mod.id})\n${constructHelpText(prefix, OpenChannelUserPerm.OWNER, mod.commandHandler.normalHelpMap())}`;
     }
 
     await ctx.channel.sendMedia(KnownChatType.TEXT, {
@@ -60,13 +60,16 @@ async function normalHelp(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
     });
 }
 
-async function openHelp(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
+async function openHelp(info: CommandInfo, ctx: TalkContext<TalkOpenChannel>) {
     let man = `명령어 도움말${'\u200b'.repeat(500)}\n\n`;
 
+    const userInfo = ctx.channel.getUserInfo(ctx.data.chat.sender);
+
     const prefix = ctx.bot.config.commandPrefix;
+    const perm = userInfo ? userInfo.perm : OpenChannelUserPerm.NONE;
 
     for (const mod of ctx.bot.allModule()) {
-        man += `${mod.name} (${mod.id})\n${constructHelpText(prefix, mod.commandHandler.openHelpMap())}`;
+        man += `${mod.name} (${mod.id})\n${constructHelpText(prefix, perm, mod.commandHandler.openHelpMap())}`;
     }
 
     await ctx.channel.sendMedia(KnownChatType.TEXT, {
@@ -80,16 +83,18 @@ function consoleHelp(info: CommandInfo, ctx: ConsoleContext, logger: Logger) {
     let man = `명령어 도움말${'\u200b'.repeat(500)}\n\n`;
 
     for (const mod of ctx.bot.allModule()) {
-        man += `${mod.name} (${mod.id})\n${constructHelpText('', mod.commandHandler.consoleHelpMap())}`;
+        man += `${mod.name} (${mod.id})\n${constructHelpText('', OpenChannelUserPerm.OWNER, mod.commandHandler.consoleHelpMap())}`;
     }
 
     logger.info(man);
 }
 
-function constructHelpText(cmdPrefix: string, iter: IterableIterator<CommandHelpMap>): string {
+function constructHelpText(cmdPrefix: string, perm: OpenChannelUserPerm, iter: IterableIterator<CommandHelpMap>): string {
     let text = '\n';
     let i = 0;
     for (const helpMap of iter) {
+        if (helpMap.executeLevel && (helpMap.executeLevel & perm) === 0) continue;
+
         text += `(${i++}) ${cmdPrefix}${helpMap.usage}\n`;
 
         if (helpMap.description) {
