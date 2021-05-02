@@ -45,7 +45,7 @@ export default function moduleInit(mod: BotModule) {
 }
 
 async function normalHelp(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
-    let man = `명령어 도움말\n\n`;
+    let man = `명령어 도움말${'\u200b'.repeat(500)}\n\n`;
 
     const prefix = ctx.bot.config.commandPrefix;
 
@@ -61,7 +61,7 @@ async function normalHelp(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
 }
 
 async function openHelp(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
-    let man = `명령어 도움말\n\n`;
+    let man = `명령어 도움말${'\u200b'.repeat(500)}\n\n`;
 
     const prefix = ctx.bot.config.commandPrefix;
 
@@ -77,7 +77,7 @@ async function openHelp(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
 }
 
 function consoleHelp(info: CommandInfo, ctx: ConsoleContext, logger: Logger) {
-    let man = `명령어 도움말\n\n`;
+    let man = `명령어 도움말${'\u200b'.repeat(500)}\n\n`;
 
     for (const mod of ctx.bot.allModule()) {
         man += `${mod.name} (${mod.id})\n${constructHelpText('', mod.commandHandler.consoleHelpMap())}\n`;
