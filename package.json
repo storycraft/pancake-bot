@@ -26,6 +26,7 @@
     "expression-eval": "^4.0.0",
     "fs-extra": "^9.1.0",
     "image-size": "^1.0.0",
+    "isolated-vm": "^4.1.0",
     "jimp": "^0.16.1",
     "lowdb": "^1.0.0",
     "node-fetch": "^2.6.1",

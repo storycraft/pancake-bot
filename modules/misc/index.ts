@@ -9,6 +9,7 @@ import { BotModule, ModuleDescriptor, TalkContext } from "../../api/bot";
 import { ChatCmdListener, CommandInfo } from "../../api/command";
 import fetch from 'node-fetch';
 import { eval, parse } from "expression-eval";
+import { Isolate } from "isolated-vm";
 
 export const MODULE_DESC: ModuleDescriptor = {
 
@@ -62,9 +63,9 @@ export default function moduleInit(mod: BotModule) {
 
     mod.commandHandler.any.addListener(
         new ChatCmdListener(
-            ['exp'],
-            { usage: 'exp (계산식)', description: '식 계산' },
-            expCommand
+            ['exec'],
+            { usage: 'exec (코드)', description: '샌드박스 코드 실행기 (실행 제한 30초)' },
+            execCommand
         )
     );
 
@@ -141,24 +142,41 @@ function rollCommand(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
     ctx.channel.sendChat(builder.build(KnownChatType.REPLY));
 }
 
-function expCommand(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
+const isolate = new Isolate();
+const execSet: WeakSet<TalkChannel> = new WeakSet();
+async function execCommand(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
     const builder = new ChatBuilder();
 
     builder.append(new ReplyContent(ctx.data.chat));
 
+    const channel = ctx.channel;
+
     if (info.args.length < 1) {
         builder.text(`실행 결과가 없습니다`);
+        await channel.sendChat(builder.build(KnownChatType.REPLY));
         return;
     }
-    
-    try {
-        const tree = parse(info.args);
-        builder.text(`result: ${eval(tree, {})}`);
-    } catch (err) {
-        builder.text(`식 실행중 오류가 발생했습니다. err: ${err}`);
+
+    if (execSet.has(ctx.channel)) {
+        builder.text(`이미 실행중인 코드가 있습니다. 실행이 끝날때까지 기다려주세요.`);
+        await channel.sendChat(builder.build(KnownChatType.REPLY));
+        return;
     }
 
-    ctx.channel.sendChat(builder.build(KnownChatType.REPLY));
+    try {
+        execSet.add(channel);
+
+        const jsContext = await isolate.createContext();
+        const result = await jsContext.eval(info.args, { timeout: 30000 });
+
+        builder.text(`result: ${result}`);
+    } catch (err) {
+        builder.text(`실행중 오류가 발생했습니다. err: ${err}`);
+    } finally {
+        execSet.delete(channel);
+    }
+
+    channel.sendChat(builder.build(KnownChatType.REPLY));
 }
 
 function readersCommand(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
