@@ -9,7 +9,8 @@ import * as path from 'path';
 import low from 'lowdb';
 import { ensureFile } from "fs-extra";
 import FileAsync from "lowdb/adapters/FileAsync";
-import { SudoManager } from "./manager";
+import { ExecuteManager } from "./manager";
+import { OpenChannelUserPerm } from "node-kakao";
 
 export const MODULE_DESC: ModuleDescriptor = {
 
@@ -22,11 +23,18 @@ export const MODULE_DESC: ModuleDescriptor = {
 
 export default async function moduleInit(mod: BotModule) {
     const sudoersDBPath = path.join(mod.dataDir, 'sudoers.json');
+    const adminDBPath = path.join(mod.dataDir, 'admins.json');
+    await ensureFile(adminDBPath);
     await ensureFile(sudoersDBPath);
+
+    mod.logger.info('admin db 불러오는 중...');
+    const adminDB = await low(new FileAsync(adminDBPath, { defaultValue: {} }));
+    mod.logger.info('admin db 로드 완료');
 
     mod.logger.info('sudoers 불러오는 중...');
     const sudoersDB = await low(new FileAsync(sudoersDBPath, { defaultValue: {} }));
     mod.logger.info('sudoers 로드 완료');
 
-    new SudoManager(mod, sudoersDB);
+    new ExecuteManager(mod, 'sudoers', 'sudoer', 'sudo', OpenChannelUserPerm.OWNER, sudoersDB);
+    new ExecuteManager(mod, 'admins', 'admin', 'mod', OpenChannelUserPerm.MANAGER, adminDB);
 }

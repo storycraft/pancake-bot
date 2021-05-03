@@ -11,52 +11,56 @@ import { ChatCmdListener, CommandInfo } from "../../api/command";
 import * as OpenChannelPerms from "../../api/open-channel-perms";
 import { getSelectedUsers } from "../../api/util/chat";
 
-export type SudoerItem = {
+export type ExecuteItem = {
     nickname: string;
     added: number;
 };
 
-export type SudoDBScheme = {
-    [channelId: string]: { [strId: string]: SudoerItem };
+export type ExecuteDBSchema = {
+    [channelId: string]: { [strId: string]: ExecuteItem };
 };
 
-export class SudoManager {
+export class ExecuteManager {
 
     constructor(
         private _mod: BotModule,
-        private _db: LowdbAsync<SudoDBScheme>
+        private _group: string,
+        private _name: string,
+        private _cmd: string,
+        private _level: OpenChannelUserPerm,
+        private _db: LowdbAsync<ExecuteDBSchema>
     ) {
         const commandHandler = _mod.commandHandler;
 
         commandHandler.open.addListener(
             new ChatCmdListener(
-                ['sudoers-add'],
-                { usage: 'sudoers-add [유저1]...', description: '선택된 유저들을 sudoer 목록에 추가합니다', executeLevel: OpenChannelUserPerm.OWNER },
+                [`${this._group}-add`],
+                { usage: `${this._group}-add [유저1]...`, description: `선택된 유저들을 ${this._name} 목록에 추가합니다`, executeLevel: OpenChannelUserPerm.OWNER },
                 (info, ctx) => this._onAddCommand(info, ctx)
             )
         );
 
         commandHandler.open.addListener(
             new ChatCmdListener(
-                ['sudoers-list'],
-                { usage: 'sudoers-list', description: 'sudoer 목록을 가져옵니다', executeLevel: OpenChannelUserPerm.OWNER },
+                [`${this._group}-list`],
+                { usage: `${this._group}-list`, description: `${this._name} 목록을 가져옵니다`, executeLevel: OpenChannelUserPerm.OWNER },
                 (info, ctx) => this._onListCommand(info, ctx)
             )
         );
 
         commandHandler.open.addListener(
             new ChatCmdListener(
-                ['sudoers-del'],
-                { usage: 'sudoers-del [유저1]...', description: '해당 유저를 sudoer에서 지웁니다', executeLevel: OpenChannelUserPerm.OWNER },
+                [`${this._group}-del`],
+                { usage: `${this._group}-del [유저1]...`, description: `해당 유저를 ${this._group}에서 지웁니다`, executeLevel: OpenChannelUserPerm.OWNER },
                 (info, ctx) => this._onDelCommand(info, ctx)
             )
         );
 
         commandHandler.open.addListener(
             new ChatCmdListener(
-                ['sudo'],
-                { usage: 'sudo (명령어)', description: '상승된 권한으로 명령어 실행', executeLevel: OpenChannelPerms.ALL },
-                (info, ctx) => this._onSudoCommand(info, ctx)
+                [this._cmd],
+                { usage: `${this._cmd} (명령어)`, description: '상승된 권한으로 명령어 실행', executeLevel: OpenChannelPerms.ALL },
+                (info, ctx) => this._onElevatedCommand(info, ctx)
             )
         );
     }
@@ -92,14 +96,14 @@ export class SudoManager {
         }
 
         await chain.write();
-        builder.text(`sudoers 목록에 ${added} 명을 새로 추가했습니다`);
+        builder.text(`${this._group} 목록에 ${added} 명을 새로 추가했습니다`);
         await ctx.channel.sendChat(builder.build(KnownChatType.REPLY));
     }
 
     private async _onListCommand(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
         const list = await this.getChannelUserList(ctx.channel);
 
-        let text = `${ctx.channel.getDisplayName()} 의 suoder 목록${'\u200b'.repeat(500)}\n\n`;
+        let text = `${ctx.channel.getDisplayName()} 의 ${this._name} 목록${'\u200b'.repeat(500)}\n\n`;
         for (const [ strId, item ] of list.entries().value()) {
             text += `${strId} (${item.nickname}) ${new Date(item.added).toLocaleString()} 에 추가됨\n`;
         }
@@ -124,11 +128,11 @@ export class SudoManager {
             deleted++;
         }
 
-        builder.text(`sudoers 목록에서 ${deleted} 명을 제거했습니다`);
+        builder.text(`${this._group} 목록에서 ${deleted} 명을 제거했습니다`);
         await ctx.channel.sendChat(builder.build(KnownChatType.REPLY));
     }
 
-    private async _onSudoCommand(info: CommandInfo, ctx: TalkContext<TalkOpenChannel>) {
+    private async _onElevatedCommand(info: CommandInfo, ctx: TalkContext<TalkOpenChannel>) {
         const list = await this.getChannelUserList(ctx.channel);
         const command = info.args;
         if (command.length < 1) {
@@ -159,16 +163,16 @@ export class SudoManager {
             await ctx.channel.sendChat(
                 new ChatBuilder()
                 .append(new ReplyContent(ctx.data.chat))
-                .text(`${nickname} 은(는) sudoers 설정 파일에 없습니다. 이 시도를 보고합니다.`)
+                .text(`${nickname} 은(는) ${this._group} 설정 파일에 없습니다. 이 시도를 보고합니다.`)
                 .build(KnownChatType.REPLY)
             );
             return;
         }
 
-        const sudoCtx = { ...ctx, userLevel: OpenChannelUserPerm.OWNER };
+        const elevatedCtx = { ...ctx, userLevel: this._level };
 
-        let res = await ctx.bot.dispatchOpenCommand(commandInfo, sudoCtx);
-        if (!res) res = await ctx.bot.dispatchAnyCommand(commandInfo, sudoCtx);
+        let res = await ctx.bot.dispatchOpenCommand(commandInfo, elevatedCtx);
+        if (!res) res = await ctx.bot.dispatchAnyCommand(commandInfo, elevatedCtx);
 
         if (!res) {
             await ctx.channel.sendChat(
