@@ -37,7 +37,7 @@ async function ytAudioCommand(info: CommandInfo, ctx: TalkContext<TalkChannel>) 
         const vidInfo = await ytdl.getInfo(info.args);
         const readable = ytdl.downloadFromInfo(vidInfo, { quality: 'highestaudio' });
 
-        let duration = Number.parseInt(vidInfo.formats[0]?.approxDurationMs || '');
+        let duration = Number.parseInt(vidInfo.videoDetails.lengthSeconds || '') * 1000;
         if (isNaN(duration)) duration = 1;
 
         if (duration > 600000) {
