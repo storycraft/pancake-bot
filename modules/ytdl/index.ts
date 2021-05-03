@@ -36,6 +36,18 @@ async function ytAudioCommand(info: CommandInfo, ctx: TalkContext<TalkChannel>) 
     try {
         const vidInfo = await ytdl.getInfo(info.args);
         const readable = ytdl.downloadFromInfo(vidInfo, { quality: 'highestaudio' });
+
+        let duration = Number.parseInt(vidInfo.formats[0]?.approxDurationMs || '');
+        if (isNaN(duration)) duration = 1;
+
+        if (duration > 600000) {
+            ctx.channel.sendChat(
+                builder
+                .text('10분 이상 영상은 사용 할 수 없습니다')
+                .build(KnownChatType.REPLY)
+            );
+            return;
+        }
        
         const data = await readableToBuffer(readable);
 
@@ -49,9 +61,6 @@ async function ytAudioCommand(info: CommandInfo, ctx: TalkContext<TalkChannel>) 
             );
             return;
         }
-
-        let duration = Number.parseInt(vidInfo.formats[0]?.approxDurationMs || '');
-        if (isNaN(duration)) duration = 1;
 
         await ctx.channel.sendChat(
             builder
