@@ -134,7 +134,7 @@ function rollCommand(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
         max = Number.parseInt(info.args);
     }
 
-    if (!max || isNaN(max)) max = 100;
+    if (!max || isNaN(max) || max <= 0) max = 100;
 
     builder.text(`-> ${Math.floor(Math.random() * max)}`);
 
