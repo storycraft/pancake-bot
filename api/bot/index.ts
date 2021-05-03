@@ -181,9 +181,11 @@ export class Bot extends TypedEmitter<BotEvents> {
         };
 
         if (commandInfo) {
-            if (!await this.dispatchNormalCommand(commandInfo, ctx)) {
-                await this.dispatchAnyCommand(commandInfo, ctx);
-            }
+            this.dispatchNormalCommand(commandInfo, ctx).then((dispatched) => {
+                if (!dispatched) {
+                    this.dispatchAnyCommand(commandInfo, ctx).then();
+                }
+            });
         }
 
         for (const mod of this._moduleMap.values()) {
@@ -205,9 +207,11 @@ export class Bot extends TypedEmitter<BotEvents> {
         };
 
         if (commandInfo) {
-            if (!await this.dispatchOpenCommand(commandInfo, ctx)) {
-                await this.dispatchAnyCommand(commandInfo, ctx);
-            }
+            this.dispatchOpenCommand(commandInfo, ctx).then((dispatched) => {
+                if (!dispatched) {
+                    this.dispatchAnyCommand(commandInfo, ctx).then();
+                }
+            });
         }
 
         for (const mod of this._moduleMap.values()) {
