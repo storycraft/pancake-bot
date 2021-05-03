@@ -51,7 +51,7 @@ async function ytPlayCommand(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
        
         const data = await readableToBuffer(readable);
 
-        const res = await AttachmentApi.upload(KnownChatType.AUDIO, 'audio.m4a', data);
+        const res = await AttachmentApi.upload(KnownChatType.FILE, 'audio.mp3', data);
 
         if (!res.success) {
             ctx.channel.sendChat(
