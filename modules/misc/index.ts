@@ -174,7 +174,7 @@ function readersCommand(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
 
         if (logId) {
             const readers = ctx.channel.getReaders({ logId });
-            builder.text(`읽은 사람 (${readers.length})\n${readers.map(reader => '- ' + reader.nickname).join(', ')}`);
+            builder.text(`읽은 사람 (${readers.length})\n${readers.map(reader => ` - ${reader.nickname}`).join('\n')}`);
         } else {
             builder.text('선택한 메세지 정보에 오류가 있습니다');
         }

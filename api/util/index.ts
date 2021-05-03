@@ -5,6 +5,8 @@
  */
 
 export * from './chained-iterator';
+export * from './chat';
+export * from './stream';
 
 export function delay(timeout: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, timeout));
