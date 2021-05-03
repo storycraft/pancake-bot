@@ -22,14 +22,14 @@ export const MODULE_DESC: ModuleDescriptor = {
 export default async function moduleInit(mod: BotModule) {
     mod.commandHandler.any.addListener(
         new ChatCmdListener(
-            ['ytaudio'],
-            { usage: 'ytaudio (주소 또는 영상 id)', description: '' },
-            ytAudioCommand
+            ['ytplay'],
+            { usage: 'ytplay (주소 또는 영상 id)', description: '' },
+            ytPlayCommand
         )
     );
 }
 
-async function ytAudioCommand(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
+async function ytPlayCommand(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
     const builder = new ChatBuilder();
     builder.append(new ReplyContent(ctx.data.chat));
 
