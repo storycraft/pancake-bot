@@ -55,7 +55,7 @@ async function ytAudioCommand(info: CommandInfo, ctx: TalkContext<TalkChannel>) 
 
         await ctx.channel.sendChat(
             builder
-            .text(`${vidInfo.videoDetails.title} by ${vidInfo.videoDetails.author}`)
+            .text(`${vidInfo.videoDetails.title} by ${vidInfo.videoDetails.author.name}`)
             .build(KnownChatType.REPLY)
         );
         await ctx.channel.sendChat(
