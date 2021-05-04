@@ -32,7 +32,7 @@ async function main(credential: BotCredential) {
         logger
     );
     if (!botRes.success) {
-        logger.fatal(`봇 시작중 오류가 발생했습니다. status: ${botRes.status}`);
+        logger.fatal(`봇 로그인중 오류가 발생했습니다. status: ${botRes.status}`);
         process.exit(-1);
     }
 
