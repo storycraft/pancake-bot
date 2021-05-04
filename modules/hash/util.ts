@@ -17,7 +17,7 @@ export function binaryEncode(input: string): string {
     let res = '';
 
     for (const byte of Buffer.from(input)) {
-        res += `\\x${byte.toString(16)}`;
+        res += `\\x${byte.toString(16).padStart(2, '0')}`;
     }
 
     return res;
