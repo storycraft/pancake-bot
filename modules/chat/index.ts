@@ -4,7 +4,7 @@
  * Copyright (c) storycraft. Licensed under the MIT Licence.
  */
 
-import { KnownChatType, ReplyAttachment, TalkChannel, TalkChatData, util } from "node-kakao";
+import { KnownChatType, Long, ReplyAttachment, TalkChannel, TalkChatData, util } from "node-kakao";
 import { BotModule, ModuleDescriptor, TalkContext } from "../../api/bot";
 import { Logger } from "../../api/logger";
 import FileAsync from 'lowdb/adapters/FileAsync';
@@ -32,7 +32,7 @@ export default async function moduleInit(mod: BotModule) {
             ['chatlog', 'chatlogs'],
             { usage: 'chatlog [채팅 수]', description: '선택된 채팅 이전의 채팅을 최대 300개까지 가져옵니다. 기본: 50', executeLevel: OpenChannelPerms.MANAGERS },
             async (info, ctx) => {
-                let logId;
+                let logId: Long | undefined;
                 if (ctx.data.originalType === KnownChatType.REPLY) {
                     const reply = ctx.data.attachment<ReplyAttachment>();
                     if (reply['src_logId']) {
@@ -41,6 +41,12 @@ export default async function moduleInit(mod: BotModule) {
                         await ctx.channel.sendChat('채팅 정보를 가져오는데 실패했습니다');
                         return;
                     }
+                }
+
+                if (!logId) {
+                    const lastChat = await ctx.channel.chatListStore.last();
+
+                    logId = lastChat?.logId;
                 }
 
                 if (!logId) {
