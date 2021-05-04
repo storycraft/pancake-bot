@@ -23,7 +23,7 @@ export default async function moduleInit(mod: BotModule) {
     mod.commandHandler.any.addListener(
         new ChatCmdListener(
             ['ytplay'],
-            { usage: 'ytplay (주소 또는 영상 id)', description: '' },
+            { usage: 'ytplay (주소 또는 영상 id)', description: '유튜브 영상 오디오 재생하기' },
             ytPlayCommand
         )
     );
