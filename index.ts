@@ -50,7 +50,9 @@ async function main(credential: BotCredential) {
             loader.load('inspect'),
             loader.load('pixiv', { api: { username: process.env['BOT_PIXIV_USERNAME'], password: process.env['BOT_PIXIV_PWD'] } }),
             loader.load('sudo'),
-            loader.load('ytdl')
+            loader.load('ytdl'),
+            loader.load('hash'),
+            loader.load('images')
         ]);
     } catch (err) {
         logger.fatal(`모듈 로딩중 오류가 발생했습니다. err: ${err}`);

@@ -17,10 +17,14 @@
     "ts-mocha": "^8.0.0"
   },
   "dependencies": {
+    "@types/crc": "^3.4.0",
+    "@types/entities": "^1.1.1",
     "@types/fs-extra": "^9.0.11",
     "@types/lowdb": "^1.0.9",
     "@types/node": "^15.0.0",
     "@types/node-fetch": "^2.5.10",
+    "crc": "^3.8.0",
+    "entities": "^2.2.0",
     "esm": "^3.2.25",
     "eventemitter3": "^4.0.7",
     "expression-eval": "^4.0.0",
@@ -28,6 +32,7 @@
     "image-size": "^1.0.0",
     "isolated-vm": "^4.1.0",
     "jimp": "^0.16.1",
+    "js-sha3": "^0.8.0",
     "lowdb": "^1.0.0",
     "node-fetch": "^2.6.1",
     "node-kakao": "^4.2.1",

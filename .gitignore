@@ -3,3 +3,5 @@ logs
 data
 start.bat
 start.sh
+client-data
+test-start.bat
