@@ -4,7 +4,7 @@
  * Copyright (c) storycraft. Licensed under the MIT Licence.
  */
 
-import { OpenLinkProfiles, TalkClient } from 'node-kakao';
+import { OpenLinkProfiles } from 'node-kakao';
 import { BotCredential, Bot } from './api/bot';
 import { FileLogger, GroupLogger, StyledLogger, WritableLogger } from './api/logger';
 import packages from './package.json';
@@ -15,7 +15,7 @@ import { NodeKakaoDB } from 'node-kakao-db';
 
 async function main(credential: BotCredential) {
     const dbClient = new NodeKakaoDB({
-        dataDir: 'client-data'
+        dataDir: './client-data'
     });
 
     const logger = new GroupLogger([
