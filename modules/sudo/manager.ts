@@ -9,7 +9,7 @@ import { Channel, ChatBuilder, KnownChatType, OpenChannelUserPerm, ReplyContent,
 import { BotModule, TalkContext } from "../../api/bot";
 import { ChatCmdListener, CommandInfo } from "../../api/command";
 import * as OpenChannelPerms from "../../api/open-channel-perms";
-import { getSelectedUsers } from "../../api/util/chat";
+import { getSelectedUsers, LONG_CHAT_SPLITTER } from "../../api/util/chat";
 
 export type ExecuteItem = {
     nickname: string;
@@ -103,7 +103,7 @@ export class ExecuteManager {
     private async _onListCommand(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
         const list = await this.getChannelUserList(ctx.channel);
 
-        let text = `${ctx.channel.getDisplayName()} 의 ${this._name} 목록${'\u200b'.repeat(500)}\n\n`;
+        let text = `${ctx.channel.getDisplayName()} 의 ${this._name} 목록${LONG_CHAT_SPLITTER}\n\n`;
         for (const [ strId, item ] of list.entries().value()) {
             text += `${strId} (${item.nickname}) ${new Date(item.added).toLocaleString()} 에 추가됨\n`;
         }

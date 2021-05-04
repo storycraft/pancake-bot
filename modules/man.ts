@@ -8,6 +8,7 @@ import { KnownChatType, OpenChannelUserPerm, TalkChannel, TalkOpenChannel } from
 import { BotModule, ConsoleContext, ModuleDescriptor, TalkContext } from "../api/bot";
 import { ChatCmdListener, CommandHelpMap, CommandInfo } from "../api/command";
 import { Logger } from "../api/logger";
+import { LONG_CHAT_SPLITTER } from "../api/util";
 
 export const MODULE_DESC: ModuleDescriptor = {
 
@@ -45,7 +46,7 @@ export default function moduleInit(mod: BotModule) {
 }
 
 async function normalHelp(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
-    let man = `명령어 도움말${'\u200b'.repeat(500)}\n\n`;
+    let man = `명령어 도움말${LONG_CHAT_SPLITTER}\n\n`;
 
     const prefix = ctx.bot.config.commandPrefix;
 
@@ -61,7 +62,7 @@ async function normalHelp(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
 }
 
 async function openHelp(info: CommandInfo, ctx: TalkContext<TalkOpenChannel>) {
-    let man = `명령어 도움말${'\u200b'.repeat(500)}\n\n`;
+    let man = `명령어 도움말${LONG_CHAT_SPLITTER}\n\n`;
 
     const userInfo = ctx.channel.getUserInfo(ctx.data.chat.sender);
 
@@ -80,7 +81,7 @@ async function openHelp(info: CommandInfo, ctx: TalkContext<TalkOpenChannel>) {
 }
 
 function consoleHelp(info: CommandInfo, ctx: ConsoleContext, logger: Logger) {
-    let man = `명령어 도움말${'\u200b'.repeat(500)}\n\n`;
+    let man = `명령어 도움말${LONG_CHAT_SPLITTER}\n\n`;
 
     for (const mod of ctx.bot.allModule()) {
         man += `${mod.name} (${mod.id})\n${constructHelpText('', OpenChannelUserPerm.OWNER, mod.commandHandler.consoleHelpMap())}`;

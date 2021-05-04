@@ -14,6 +14,7 @@ import { ensureFile } from "fs-extra";
 import { ChatFilterManager } from "./filter";
 import * as OpenChannelPerms from '../../api/open-channel-perms';
 import { ChatCmdListener } from "../../api/command";
+import { LONG_CHAT_SPLITTER } from "../../api/util";
 
 export const MODULE_DESC: ModuleDescriptor = {
 
@@ -57,7 +58,7 @@ export default async function moduleInit(mod: BotModule) {
 
                 const iter = ctx.channel.chatListStore.before(logId, count);
 
-                let text = `${ctx.channel.getDisplayName()} 챗 기록\n\n`;
+                let text = `${ctx.channel.getDisplayName()} 챗 기록${LONG_CHAT_SPLITTER}\n\n`;
                 let i = 0;
                 for await (const chat of iter) {
                     const data = new TalkChatData(chat);

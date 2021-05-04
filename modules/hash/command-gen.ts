@@ -4,9 +4,9 @@
  * Copyright (c) storycraft. Licensed under the MIT Licence.
  */
 
-import { ChatBuilder, KnownChatType, ReplyContent, TalkChannel } from "node-kakao";
-import { BotModule, TalkContext } from "../../api/bot";
-import { ChatCmdListener, CommandInfo } from "../../api/command";
+import { ChatBuilder, KnownChatType, ReplyContent } from "node-kakao";
+import { BotModule } from "../../api/bot";
+import { ChatCmdListener } from "../../api/command";
 import { nodeHashHex } from "./util";
 
 export function addNodeHashCmd(mod: BotModule, method: string) {

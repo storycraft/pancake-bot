@@ -27,3 +27,5 @@ export function getSelectedUsers(data: TalkChatData): ChannelUser[] {
 
     return targets;
 }
+
+export const LONG_CHAT_SPLITTER: string = '\u200b'.repeat(500);

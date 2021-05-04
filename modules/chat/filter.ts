@@ -11,6 +11,7 @@ import * as OpenChannelPerms from "../../api/open-channel-perms";
 import { Expression } from 'jsep';
 import { Channel, ChatBuilder, KnownChatType, OpenChannelUserPerm, ReplyContent, TalkOpenChannel } from 'node-kakao';
 import { evalAsync, parse } from 'expression-eval';
+import { LONG_CHAT_SPLITTER } from '../../api/util';
 
 export type FilterItem = {
     
@@ -115,7 +116,7 @@ export class ChatFilterManager {
     private async _onListCommand(info: CommandInfo, ctx: TalkContext<TalkOpenChannel>) {
         const filters = await this.getChannelFilter(ctx.channel);
 
-        let text = `${ctx.channel.getDisplayName()} 의 필터 목록${'\u200b'.repeat(500)}\n\n`;
+        let text = `${ctx.channel.getDisplayName()} 의 필터 목록${LONG_CHAT_SPLITTER}\n\n`;
         let i = 0;
         for (const filter of filters.value()) {
             text += `(${i}) [${new Date(filter.added).toLocaleString()}] ${filter.user.nickname} 이(가) 추가\n${filter.expRaw}\n\n`;

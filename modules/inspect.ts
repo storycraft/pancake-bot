@@ -8,7 +8,7 @@ import { ChatBuilder, KnownChatType, KnownLinkPrivilegeMask, Long, ReplyAttachme
 import { BotModule, ModuleDescriptor, TalkContext } from "../api/bot";
 import { ChatCmdListener, CommandInfo } from "../api/command";
 import * as OpenChannelPerms from "../api/open-channel-perms";
-import { getSelectedUsers } from "../api/util/chat";
+import { getSelectedUsers, LONG_CHAT_SPLITTER } from "../api/util/chat";
 
 export const MODULE_DESC: ModuleDescriptor = {
 
@@ -69,7 +69,7 @@ async function normalChannelInspect(info: CommandInfo, ctx: TalkContext<TalkNorm
     const noticeLocked = privilegeContent && privilegeContent['pin_notice'] || false;
     const channelInfo = channel.info;
 
-    const text = `${channel.getDisplayName()} 채널 정보${'\u200b'.repeat(500)}\n\n` +
+    const text = `${channel.getDisplayName()} 채널 정보${LONG_CHAT_SPLITTER}\n\n` +
     `channelId: ${channel.channelId}\n` + 
     `displayName: ${channel.getDisplayName()}\n` + 
     `name: ${channel.getName()}\n` + 
@@ -97,7 +97,7 @@ async function normalChannelUserInspect(info: CommandInfo, ctx: TalkContext<Talk
         return;
     }
 
-    const text = `${userInfo.nickname} 유저 정보${'\u200b'.repeat(500)}\n\n` +
+    const text = `${userInfo.nickname} 유저 정보${LONG_CHAT_SPLITTER}\n\n` +
                 `userId: ${userInfo.userId}\n` + 
                 `nickname: ${userInfo.nickname}\n` + 
                 `profileURL: ${userInfo.profileURL}\n` + 
@@ -126,7 +126,7 @@ async function openChannelInspect(info: CommandInfo, ctx: TalkContext<TalkOpenCh
     const openLink = channelInfo.openLink;
     const pv = Long.fromValue(openLink?.privilege || 0);
 
-    const text = `${channel.getDisplayName()} 채널 정보${'\u200b'.repeat(500)}\n\n` +
+    const text = `${channel.getDisplayName()} 채널 정보${LONG_CHAT_SPLITTER}}\n\n` +
     `channelId: ${channel.channelId}\n` + 
     `displayName: ${channel.getDisplayName()}\n` + 
     `name: ${channel.getName()}\n` + 
@@ -174,7 +174,7 @@ async function openChannelUserInspect(info: CommandInfo, ctx: TalkContext<TalkOp
         return;
     }
 
-    const text = `${userInfo.nickname} 유저 정보${'\u200b'.repeat(500)}\n\n` +
+    const text = `${userInfo.nickname} 유저 정보${LONG_CHAT_SPLITTER}\n\n` +
                 `userId: ${userInfo.userId}\n` + 
                 `nickname: ${userInfo.nickname}\n` + 
                 `profileURL: ${userInfo.profileURL}\n` + 
@@ -225,7 +225,7 @@ async function chatInspect(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
         return;
     }
 
-    const text = `${chat.logId} 채팅 정보${'\u200b'.repeat(500)}\n\n` +
+    const text = `${chat.logId} 채팅 정보${LONG_CHAT_SPLITTER}\n\n` +
                 `logId: ${chat.logId}\n` + 
                 `prevLogId: ${chat.prevLogId}\n` +
                 `sendAt: ${chat.sendAt}\n` + 
