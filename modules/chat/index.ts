@@ -65,7 +65,7 @@ export default async function moduleInit(mod: BotModule) {
                     const info = data.getSenderInfo(ctx.channel);
                     const name = info ? info.nickname : '(알수없음)';
 
-                    text += `(${i}) [${new Date(chat.sendAt).toLocaleString()}] (logId: ${chat.logId}) ${name} (senderId: ${chat.sender.userId}) (type: ${data.originalType}) ${data.isDeleted() ? '(deleted)' : ''}: ${chat.text}\n`;
+                    text += `(${i}) [${data.sendAt.toLocaleString()}] (logId: ${chat.logId}) ${name} (senderId: ${chat.sender.userId}) (type: ${data.originalType}) ${data.isDeleted() ? '(deleted)' : ''}: ${chat.text}\n`;
                     if (chat.attachment && Object.keys(chat.attachment).length > 0) {
                         text += `attachment: ${util.JsonUtil.stringifyLoseless(chat.attachment)}\n`;
                     }
