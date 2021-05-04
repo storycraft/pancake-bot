@@ -11,9 +11,13 @@ import packages from './package.json';
 import * as os from 'os';
 import * as readline from 'readline';
 import { BotModuleLoader } from './api/bot/loader';
+import { NodeKakaoDB } from 'node-kakao-db';
 
 async function main(credential: BotCredential) {
-    const client = new TalkClient();
+    const dbClient = new NodeKakaoDB({
+        dataDir: 'client-data'
+    });
+
     const logger = new GroupLogger([
         new StyledLogger(new WritableLogger(process.stdout, process.stderr), true, true, true),
         new StyledLogger(new FileLogger('logs'), true, true, false)
@@ -23,7 +27,7 @@ async function main(credential: BotCredential) {
 
     const botRes = await Bot.start(
         credential,
-        client,
+        dbClient,
         './data',
         logger
     );

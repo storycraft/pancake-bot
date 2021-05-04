@@ -9,7 +9,7 @@ export * from './loader';
 export * from './context';
 export * from './module';
 
-import { AsyncCommandResult, AuthApiClient, OpenChannelUserPerm, TalkChannel, TalkChatData, TalkClient, TalkNormalChannel, TalkOpenChannel } from "node-kakao";
+import { AsyncCommandResult, AuthApiClient, KnownDataStatusCode, OpenChannelUserPerm, TalkChannel, TalkChatData, TalkClient, TalkNormalChannel, TalkOpenChannel } from "node-kakao";
 import { CommandInfo, CommandParser, TextCommandParser } from "../command";
 import { Logger, SubLogger } from "../logger";
 import { BotModule, ModuleDescriptor } from "./module";
@@ -17,6 +17,7 @@ import { delay } from "../util";
 import { ConsoleContext, TalkContext } from "./context";
 import * as path from 'path';
 import { TypedEmitter } from '../event';
+import { NodeKakaoDB } from 'node-kakao-db';
 
 /**
  * 봇 계정 정보
@@ -83,7 +84,7 @@ export class Bot extends TypedEmitter<BotEvents> {
     /// 채팅 명령어 파서
     private _chatParser: CommandParser;
 
-    private constructor(
+    constructor(
         /// 봇 인증 정보
         private _credential: BotCredential,
         /// 봇 클라이언트
@@ -351,21 +352,24 @@ export class Bot extends TypedEmitter<BotEvents> {
         this._client.close();
     }
 
-
     static async start(
         credential: BotCredential,
-        client: TalkClient,
+        dbClient: NodeKakaoDB,
         rootDataDir: string,
         rootLogger: Logger,
         config: BotConfig = DEFAULT_CONFIG
     ): AsyncCommandResult<Bot> {
-        const bot = new Bot(credential, client, rootDataDir, rootLogger, config);
+        const auth = await AuthApiClient.create(credential.deviceName, credential.deviceUUID);
 
-        const loginRes = await bot.refreshSession();
+        const authRes = await auth.login({ forced: true, ...credential });
 
-        if (!loginRes.success) return loginRes;
+        if (!authRes.success) return authRes;
+        const clientRes = await dbClient.login(authRes.result.userId, authRes.result);
+        if (!clientRes.success) return clientRes;
+        
+        const result = new Bot(credential, clientRes.result.client, rootDataDir, rootLogger, config);
 
-        return { success: true, status: loginRes.status, result: bot };
+        return { status: KnownDataStatusCode.SUCCESS, success: true, result };
     }
 
 }

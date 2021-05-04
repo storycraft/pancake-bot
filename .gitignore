@@ -2,3 +2,4 @@ node_modules
 logs
 data
 start.bat
+start.sh
