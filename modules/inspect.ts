@@ -5,10 +5,10 @@
 */
 
 import { ChatBuilder, KnownChatType, KnownLinkPrivilegeMask, Long, ReplyAttachment, ReplyContent, TalkChannel, TalkNormalChannel, TalkOpenChannel, util } from "node-kakao";
-import { BotModule, ModuleDescriptor, TalkContext } from "../../api/bot";
-import { ChatCmdListener, CommandInfo } from "../../api/command";
-import * as OpenChannelPerms from "../../api/open-channel-perms";
-import { getSelectedUsers } from "../../api/util/chat";
+import { BotModule, ModuleDescriptor, TalkContext } from "../api/bot";
+import { ChatCmdListener, CommandInfo } from "../api/command";
+import * as OpenChannelPerms from "../api/open-channel-perms";
+import { getSelectedUsers } from "../api/util/chat";
 
 export const MODULE_DESC: ModuleDescriptor = {
 

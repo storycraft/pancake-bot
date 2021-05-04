@@ -5,9 +5,9 @@
  */
 
 import { KnownChatType, OpenChannelUserPerm, TalkChannel, TalkOpenChannel } from "node-kakao";
-import { BotModule, ConsoleContext, ModuleDescriptor, TalkContext } from "../../api/bot";
-import { ChatCmdListener, CommandHelpMap, CommandInfo } from "../../api/command";
-import { Logger } from "../../api/logger";
+import { BotModule, ConsoleContext, ModuleDescriptor, TalkContext } from "../api/bot";
+import { ChatCmdListener, CommandHelpMap, CommandInfo } from "../api/command";
+import { Logger } from "../api/logger";
 
 export const MODULE_DESC: ModuleDescriptor = {
 
