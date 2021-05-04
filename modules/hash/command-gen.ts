@@ -50,10 +50,11 @@ export function addEncodingCmd(
     encode: boolean,
     calculator: (input: string) => string | Promise<string>
 ) {
+    const cmd = `${method}-${encode ? 'en' : 'de'}`;
     mod.commandHandler.any.addListener(
         new ChatCmdListener(
-            [`${method}-${encode ? 'en' : 'de'}`],
-            { usage: `${method} (문자열)`, description: `주어진 문자열을 ${method} 로 ${encode ? '인코딩' : '디코딩'}합니다` },
+            [cmd],
+            { usage: `${cmd} (문자열)`, description: `주어진 문자열을 ${method}로 ${encode ? '인코딩' : '디코딩'}합니다` },
             async (info, ctx) => {
                 const builder = new ChatBuilder();
         
