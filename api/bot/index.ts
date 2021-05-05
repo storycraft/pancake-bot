@@ -222,24 +222,39 @@ export class Bot extends TypedEmitter<BotEvents> {
     }
 
     async dispatchAnyCommand(info: CommandInfo, ctx: TalkContext<TalkChannel>): Promise<boolean> {
-        for (const mod of this._moduleMap.values()) {
-            if (await mod.commandHandler.any.dispatch(info, ctx)) return true;
+        if (info.namespace !== '') {
+            const mod = this._moduleMap.get(info.namespace);
+            if (mod) return mod.commandHandler.any.dispatch(info, ctx);
+        } else {
+            for (const mod of this._moduleMap.values()) {
+                if (await mod.commandHandler.any.dispatch(info, ctx)) return true;
+            }
         }
 
         return false;
     }
 
     async dispatchOpenCommand(info: CommandInfo, ctx: TalkContext<TalkOpenChannel>): Promise<boolean> {
-        for (const mod of this._moduleMap.values()) {
-            if (await mod.commandHandler.open.dispatch(info, ctx)) return true;
+        if (info.namespace !== '') {
+            const mod = this._moduleMap.get(info.namespace);
+            if (mod) return mod.commandHandler.open.dispatch(info, ctx);
+        } else {
+            for (const mod of this._moduleMap.values()) {
+                if (await mod.commandHandler.open.dispatch(info, ctx)) return true;
+            }
         }
 
         return false;
     }
 
     async dispatchNormalCommand(info: CommandInfo, ctx: TalkContext<TalkNormalChannel>): Promise<boolean> {
-        for (const mod of this._moduleMap.values()) {
-            if (await mod.commandHandler.normal.dispatch(info, ctx)) return true;
+        if (info.namespace !== '') {
+            const mod = this._moduleMap.get(info.namespace);
+            if (mod) return mod.commandHandler.normal.dispatch(info, ctx);
+        } else {
+            for (const mod of this._moduleMap.values()) {
+                if (await mod.commandHandler.normal.dispatch(info, ctx)) return true;
+            }
         }
 
         return false;
