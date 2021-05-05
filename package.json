@@ -36,7 +36,7 @@
     "lowdb": "^1.0.0",
     "node-fetch": "^2.6.1",
     "node-kakao": "^4.2.1",
-    "node-kakao-db": "^0.1.0",
+    "node-kakao-db": "^0.1.1",
     "pixiv-app-api": "^1.2.1",
     "promise-writable": "^6.0.0",
     "ts-node": "^9.1.1",
