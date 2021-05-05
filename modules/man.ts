@@ -51,7 +51,7 @@ async function normalHelp(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
     const prefix = ctx.bot.config.commandPrefix;
 
     for (const mod of ctx.bot.allModule()) {
-        man += `${mod.name} (${mod.id})\n${constructHelpText(prefix, OpenChannelUserPerm.OWNER, mod.commandHandler.normalHelpMap())}`;
+        man += `${mod.name} (${mod.id})\n${mod.desc}\n${constructHelpText(prefix, OpenChannelUserPerm.OWNER, mod.commandHandler.normalHelpMap())}`;
     }
 
     await ctx.channel.sendMedia(KnownChatType.TEXT, {
@@ -70,7 +70,7 @@ async function openHelp(info: CommandInfo, ctx: TalkContext<TalkOpenChannel>) {
     const perm = userInfo ? userInfo.perm : OpenChannelUserPerm.NONE;
 
     for (const mod of ctx.bot.allModule()) {
-        man += `${mod.name} (${mod.id})\n${constructHelpText(prefix, perm, mod.commandHandler.openHelpMap())}`;
+        man += `${mod.name} (${mod.id})\n${mod.desc}\n${constructHelpText(prefix, perm, mod.commandHandler.openHelpMap())}`;
     }
 
     await ctx.channel.sendMedia(KnownChatType.TEXT, {
@@ -84,7 +84,7 @@ function consoleHelp(info: CommandInfo, ctx: ConsoleContext, logger: Logger) {
     let man = `명령어 도움말${LONG_CHAT_SPLITTER}\n\n`;
 
     for (const mod of ctx.bot.allModule()) {
-        man += `${mod.name} (${mod.id})\n${constructHelpText('', OpenChannelUserPerm.OWNER, mod.commandHandler.consoleHelpMap())}`;
+        man += `${mod.name} (${mod.id})\n${mod.desc}\n${constructHelpText('', OpenChannelUserPerm.OWNER, mod.commandHandler.consoleHelpMap())}`;
     }
 
     logger.info(man);
