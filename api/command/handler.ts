@@ -75,7 +75,7 @@ export class ConsoleCmdListener implements CommandListener<ConsoleContext> {
 
 }
 
-export class ChatCmdListener<C extends TalkChannel> implements CommandListener<TalkContext<C>> {
+export class ChatCmdListener<C> implements CommandListener<TalkContext<C>> {
 
     constructor(
         private _commands: string[],
