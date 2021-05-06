@@ -4,8 +4,8 @@
  * Copyright (c) storycraft. Licensed under the MIT Licence.
  */
 
-import jimp from "jimp";
-import { ChatBuilder, Chatlog, KnownChatType, PhotoAttachment, ReplyAttachment, ReplyContent, stream, TalkChatData } from "node-kakao";
+import Jimp from "jimp";
+import { ChatBuilder, KnownChatType, ReplyContent } from "node-kakao";
 import { BotModule, ModuleDescriptor } from "../../api/bot";
 import { ChatCmdListener, CommandHandler, CommandHelpMap, CommandInfo, TextCommandParser } from "../../api/command";
 import { ImageContext } from "./context";
@@ -135,7 +135,7 @@ export default function moduleInit(mod: BotModule) {
 
     addImageCommand(
         ['blur'],
-        { usage: 'blur (효과 반지름 px)', description: '이미지에 흐림효과 적용' },
+        { usage: 'blur (radius)', description: '이미지에 흐림효과 적용' },
         (info, ctx) => {
             if (info.args.length < 1) throw new Error('효과 반지름이 제공되지 않았습니다');
             const radius = Number.parseFloat(info.args);
@@ -148,7 +148,7 @@ export default function moduleInit(mod: BotModule) {
 
     addImageCommand(
         ['gaussian'],
-        { usage: 'gaussian (효과 반지름 px)', description: '이미지에 가우시안 흐림효과 적용' },
+        { usage: 'gaussian (radius)', description: '이미지에 가우시안 흐림효과 적용' },
         (info, ctx) => {
             if (info.args.length < 1) throw new Error('효과 반지름이 제공되지 않았습니다');
             const radius = Number.parseFloat(info.args);
@@ -237,13 +237,13 @@ export default function moduleInit(mod: BotModule) {
 
     addImageCommand(
         ['posterize'],
-        { usage: 'posterize (효과 수치)', description: '이미지 포스터화 효과' },
+        { usage: 'posterize (amount)', description: '이미지 포스터화 효과' },
         (info, ctx) => {
-            if (info.args.length < 1) throw new Error('효과 수치가 제공되지 않았습니다');
+            if (info.args.length < 1) throw new Error('amount가 제공되지 않았습니다');
             let val = Number.parseInt(info.args);
 
-            if (isNaN(val)) throw new Error('효과 수치는 정수여야 합니다');
-            if (val < 0 || val > 255) throw new Error('효과 수치의 유효 범위는 0 ~ 255 입니다');
+            if (isNaN(val)) throw new Error('amount는 정수여야 합니다');
+            if (val < 0 || val > 255) throw new Error('amount의 유효 범위는 0 ~ 255 입니다');
 
             ctx.image.posterize(val);
         }
@@ -268,7 +268,7 @@ export default function moduleInit(mod: BotModule) {
 
     addImageCommand(
         ['rotate'],
-        { usage: 'rotate (각도)', description: '이미지 회전' },
+        { usage: 'rotate (degree)', description: '이미지 회전' },
         (info, ctx) => {
             if (info.args.length < 1) throw new Error('회전 각도가 제공되지 않았습니다');
             const amount = Number.parseFloat(info.args);
@@ -281,7 +281,7 @@ export default function moduleInit(mod: BotModule) {
 
     addImageCommand(
         ['fade'],
-        { usage: 'fade (페이드 수치 0 ~ 1)', description: '이미지 페이드' },
+        { usage: 'fade (amount 0 ~ 1)', description: '이미지 페이드' },
         (info, ctx) => {
             if (info.args.length < 1) throw new Error('페이드 수치가 제공되지 않았습니다');
             const val = Number.parseFloat(info.args);
@@ -295,7 +295,7 @@ export default function moduleInit(mod: BotModule) {
 
     addImageCommand(
         ['opacity'],
-        { usage: 'opacity (투명도 0 ~ 1)', description: '이미지 투명도 변경' },
+        { usage: 'opacity (opacity 0 ~ 1)', description: '이미지 투명도 변경' },
         (info, ctx) => {
             if (info.args.length < 1) throw new Error('투명도가 제공되지 않았습니다');
             const val = Number.parseFloat(info.args);
@@ -309,7 +309,7 @@ export default function moduleInit(mod: BotModule) {
 
     addImageCommand(
         ['pixelate'],
-        { usage: 'pixelate (크기) [(x) (y) (width) (height)]', description: '이미지 전체 또는 특정 부분에 픽셀화 효과 적용' },
+        { usage: 'pixelate (amount) [(x) (y) (width) (height)]', description: '이미지 전체 또는 특정 부분에 픽셀화 효과 적용' },
         (info, ctx) => {
             if (info.args.length < 1) throw new Error('크기가 제공되지 않았습니다');
 
@@ -340,4 +340,99 @@ export default function moduleInit(mod: BotModule) {
         }
     );
 
+    addImageCommand(
+        ['emboss'],
+        { usage: 'emboss', description: '이미지에 emboss 효과 적용' },
+        (info, ctx) => {
+            ctx.image.convolute([[-2, -1, 0], [-1, 1, 1], [0, 1, 2]]);
+        }
+    );
+
+    addImageCommand(
+        ['sharpen'],
+        { usage: 'sharpen', description: '이미지에 sharpen 효과 적용' },
+        (info, ctx) => {
+            ctx.image.convolute([[0, -1, 0], [-1, 5, -1], [0, -1, 0]]);
+        }
+    );
+
+    addImageCommand(
+        ['red'],
+        { usage: 'red (amount)', description: '이미지 빨간색 수정' },
+        (info, ctx) => {
+            const amount = Number.parseFloat(info.args);
+            if (isNaN(amount)) throw new Error('amount는 실수여야 합니다');
+
+            ctx.image.color([
+                { apply: 'red' , params: [amount] }
+            ]);
+        }
+    );
+
+    addImageCommand(
+        ['green'],
+        { usage: 'green (amount)', description: '이미지 초록색 수정' },
+        (info, ctx) => {
+            const amount = Number.parseFloat(info.args);
+            if (isNaN(amount)) throw new Error('amount는 실수여야 합니다');
+
+            ctx.image.color([
+                { apply: 'green' , params: [amount] }
+            ]);
+        }
+    );
+
+    addImageCommand(
+        ['blue'],
+        { usage: 'blue (amount)', description: '이미지 파란색 수정' },
+        (info, ctx) => {
+            const amount = Number.parseFloat(info.args);
+            if (isNaN(amount)) throw new Error('amount는 실수여야 합니다');
+
+            ctx.image.color([
+                { apply: 'blue' , params: [amount] }
+            ]);
+        }
+    );
+
+    addImageCommand(
+        ['xor'],
+        { usage: 'xor (css color)', description: '인자로 주어진 색과 xor' },
+        (info, ctx) => {
+            if (info.args.length < 1) throw new Error('색이 주어지지 않았습니다');
+
+            ctx.image.color([
+                { apply: 'xor' , params: [info.args] }
+            ]);
+        }
+    );
+
+    addImageCommand(
+        ['hue'],
+        { usage: 'hue (degree)', description: '이미지 색 회전' },
+        (info, ctx) => {
+            const degree = Number.parseFloat(info.args);
+            if (isNaN(degree)) throw new Error('degree는 실수여야 합니다');
+
+            ctx.image.color([
+                { apply: 'hue' , params: [degree] }
+            ]);
+        }
+    );
+
+    addImageCommand(
+        ['mix'],
+        { usage: 'mix (css color)', description: '이미지 색상화' },
+        (info, ctx) => {
+            if (info.args.length < 1) throw new Error('인자가 부족합니다');
+
+            const color = Jimp.cssColorToHex(info.args);
+
+            const opacity = (((color >>> 24) & 0xff) / 255) * 100;
+
+            ctx.image.color([
+                { apply: 'mix' , params: [info.args, opacity] }
+            ]);
+        }
+    );
 }

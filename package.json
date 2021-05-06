@@ -25,7 +25,6 @@
     "@types/node-fetch": "^2.5.10",
     "crc": "^3.8.0",
     "entities": "^2.2.0",
-    "esm": "^3.2.25",
     "eventemitter3": "^4.0.7",
     "expression-eval": "^4.0.0",
     "fs-extra": "^9.1.0",
