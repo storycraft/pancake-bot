@@ -1236,10 +1236,10 @@ node-forge@^0.10.0:
   resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-0.10.0.tgz#32dea2afb3e9926f02ee5ce8794902691a676bf3"
   integrity sha512-PPmu8eEeG9saEUvI97fm4OYxXVB6bFvyNTyiUOBichBpFG8A1Ljw3bY62+5oOjDEMHRnd0Y7HQ+x7uzxOzC6JA==
 
-node-kakao-db@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/node-kakao-db/-/node-kakao-db-0.1.1.tgz#369abcdaee18952a58e114d68a7ecac92c65a1a9"
-  integrity sha512-qZOTDHa5T8Gz/VQv3iUd7Bs9MjI7TF/4UG2TZmuEXqnyCrURg5AWglAYs599qtU7bCm1q4Ytv/3In+D+KzBKfQ==
+node-kakao-db@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/node-kakao-db/-/node-kakao-db-0.1.2.tgz#a50a38e2d56912a15bf992be8ce568db8f4f60bb"
+  integrity sha512-g8OU4aICXxoMWUsbxXWpkEZ+cTRzdGP8kxUiKzkwsCZgY3WKUx94d+IFFKlhldO8LiRPP1ytYc4bG382snifMA==
   dependencies:
     better-sqlite3-sqlcipher "^5.4.3-3"
     bson "^4.2.3"

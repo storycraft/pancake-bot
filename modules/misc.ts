@@ -8,7 +8,6 @@ import { ChatBuilder, KnownChatType, MentionContent, ReplyAttachment, ReplyConte
 import { BotModule, ModuleDescriptor, TalkContext } from "../api/bot";
 import { ChatCmdListener, CommandInfo } from "../api/command";
 import fetch from 'node-fetch';
-import { eval, parse } from "expression-eval";
 import { Isolate } from "isolated-vm";
 
 export const MODULE_DESC: ModuleDescriptor = {

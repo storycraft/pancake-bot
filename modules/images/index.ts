@@ -110,16 +110,16 @@ export default function moduleInit(mod: BotModule) {
             if (args.length < 4) throw new Error('인자가 4개 필요합니다');
 
             const x = Number.parseFloat(args[0]);
-            if (isNaN(x)) throw new Error('x는 실수여야 합니다');
+            if (isNaN(x) || x < 0) throw new Error('x는 0 이상인 실수여야 합니다');
 
             const y = Number.parseFloat(args[1]);
-            if (isNaN(y)) throw new Error('y는 실수여야 합니다');
+            if (isNaN(y) || y < 0) throw new Error('y는 0 이상인 실수여야 합니다');
 
             const width = Number.parseFloat(args[2]);
-            if (isNaN(width)) throw new Error('width는 실수여야 합니다');
+            if (isNaN(width) || width < 0) throw new Error('width는 0 이상인 실수여야 합니다');
     
             const height = Number.parseFloat(args[3]);
-            if (isNaN(height)) throw new Error('height는 실수여야 합니다');
+            if (isNaN(height) || height < 0) throw new Error('height는 0 이상인 실수여야 합니다');
 
             ctx.image.crop(x, y, width, height);
         }
@@ -138,7 +138,7 @@ export default function moduleInit(mod: BotModule) {
         { usage: 'blur (효과 반지름 px)', description: '이미지에 흐림효과 적용' },
         (info, ctx) => {
             if (info.args.length < 1) throw new Error('효과 반지름이 제공되지 않았습니다');
-            let radius = Number.parseFloat(info.args);
+            const radius = Number.parseFloat(info.args);
 
             if (isNaN(radius)) throw new Error('효과 반지름은 실수여야 합니다');
 
@@ -151,7 +151,7 @@ export default function moduleInit(mod: BotModule) {
         { usage: 'gaussian (효과 반지름 px)', description: '이미지에 가우시안 흐림효과 적용' },
         (info, ctx) => {
             if (info.args.length < 1) throw new Error('효과 반지름이 제공되지 않았습니다');
-            let radius = Number.parseFloat(info.args);
+            const radius = Number.parseFloat(info.args);
 
             if (isNaN(radius)) throw new Error('효과 반지름은 실수여야 합니다');
 
@@ -180,7 +180,7 @@ export default function moduleInit(mod: BotModule) {
         { usage: 'contrast (-1 ~ 1)', description: '이미지 대비 변경' },
         (info, ctx) => {
             if (info.args.length < 1) throw new Error('대비 수치가 제공되지 않았습니다');
-            let val = Number.parseFloat(info.args);
+            const val = Number.parseFloat(info.args);
 
             if (isNaN(val)) throw new Error('대비 수치는 실수여야 합니다');
             if (val < -1 || val > 1) throw new Error('대비 수치의 유효 범위는 -1 ~ 1 입니다');
@@ -194,7 +194,7 @@ export default function moduleInit(mod: BotModule) {
         { usage: 'brightness (-1 ~ 1)', description: '이미지 밝기 변경' },
         (info, ctx) => {
             if (info.args.length < 1) throw new Error('밝기 수치가 제공되지 않았습니다');
-            let val = Number.parseFloat(info.args);
+            const val = Number.parseFloat(info.args);
 
             if (isNaN(val)) throw new Error('밝기 수치는 실수여야 합니다');
             if (val < -1 || val > 1) throw new Error('밝기 수치의 유효 범위는 -1 ~ 1 입니다');
@@ -271,7 +271,7 @@ export default function moduleInit(mod: BotModule) {
         { usage: 'rotate (각도)', description: '이미지 회전' },
         (info, ctx) => {
             if (info.args.length < 1) throw new Error('회전 각도가 제공되지 않았습니다');
-            let amount = Number.parseFloat(info.args);
+            const amount = Number.parseFloat(info.args);
 
             if (isNaN(amount)) throw new Error('각도는 실수여야 합니다');
 
@@ -284,7 +284,7 @@ export default function moduleInit(mod: BotModule) {
         { usage: 'fade (페이드 수치 0 ~ 1)', description: '이미지 페이드' },
         (info, ctx) => {
             if (info.args.length < 1) throw new Error('페이드 수치가 제공되지 않았습니다');
-            let val = Number.parseFloat(info.args);
+            const val = Number.parseFloat(info.args);
 
             if (isNaN(val)) throw new Error('페이드 수치는 실수여야 합니다');
             if (val < 0 || val > 1) throw new Error('페이드 수치의 유효 범위는 0 ~ 1 입니다');
@@ -298,12 +298,45 @@ export default function moduleInit(mod: BotModule) {
         { usage: 'opacity (투명도 0 ~ 1)', description: '이미지 투명도 변경' },
         (info, ctx) => {
             if (info.args.length < 1) throw new Error('투명도가 제공되지 않았습니다');
-            let val = Number.parseFloat(info.args);
+            const val = Number.parseFloat(info.args);
 
             if (isNaN(val)) throw new Error('투명도는 실수여야 합니다');
             if (val < 0 || val > 1) throw new Error('투명도 유효 범위는 0 ~ 1 입니다');
 
             ctx.image.opacity(val);
+        }
+    );
+
+    addImageCommand(
+        ['pixelate'],
+        { usage: 'pixelate (크기) [(x) (y) (width) (height)]', description: '이미지 전체 또는 특정 부분에 픽셀화 효과 적용' },
+        (info, ctx) => {
+            if (info.args.length < 1) throw new Error('크기가 제공되지 않았습니다');
+
+            const args = info.args.split(' ');
+
+            const size = Number.parseFloat(args[0]);
+            
+            if (isNaN(size)) throw new Error('픽셀화 크기는 실수여야 합니다');
+            if (size < 0) throw new Error('픽셀화 크기는 음수 일 수 없습니다');
+
+            if (args.length > 4) {
+                const x = Number.parseFloat(args[1]);
+                if (isNaN(x) || x < 0) throw new Error('x는 0 이상인 실수여야 합니다');
+    
+                const y = Number.parseFloat(args[2]);
+                if (isNaN(y) || y < 0) throw new Error('y는 0 이상인 실수여야 합니다');
+    
+                const width = Number.parseFloat(args[3]);
+                if (isNaN(width) || width < 0) throw new Error('width는 0 이상인 큰 실수여야 합니다');
+        
+                const height = Number.parseFloat(args[4]);
+                if (isNaN(height) || height < 0) throw new Error('height는 0 이상인 큰 실수여야 합니다');
+                
+                ctx.image.pixelate(size, x, y, width, height);
+            } else {
+                ctx.image.pixelate(size);
+            }
         }
     );
 
