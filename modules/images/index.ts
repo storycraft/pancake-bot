@@ -357,8 +357,17 @@ export default function moduleInit(mod: BotModule) {
     );
 
     addImageCommand(
+        ['edge-detect'],
+        { usage: 'edge-detect', description: '이미지에 edge-detection 효과 적용' },
+        (info, ctx) => {
+            ctx.image.grayscale();
+            ctx.image.convolute([[0, 1, 0], [1, -4, 1], [0, 1, 0]]);
+        }
+    );
+
+    addImageCommand(
         ['red'],
-        { usage: 'red (amount)', description: '이미지 빨간색 수정' },
+        { usage: 'red (amount)', description: '이미지 빨간색 채널 수정' },
         (info, ctx) => {
             const amount = Number.parseFloat(info.args);
             if (isNaN(amount)) throw new Error('amount는 실수여야 합니다');
@@ -371,7 +380,7 @@ export default function moduleInit(mod: BotModule) {
 
     addImageCommand(
         ['green'],
-        { usage: 'green (amount)', description: '이미지 초록색 수정' },
+        { usage: 'green (amount)', description: '이미지 초록색 채널 수정' },
         (info, ctx) => {
             const amount = Number.parseFloat(info.args);
             if (isNaN(amount)) throw new Error('amount는 실수여야 합니다');
@@ -384,7 +393,7 @@ export default function moduleInit(mod: BotModule) {
 
     addImageCommand(
         ['blue'],
-        { usage: 'blue (amount)', description: '이미지 파란색 수정' },
+        { usage: 'blue (amount)', description: '이미지 파란색 채널 수정' },
         (info, ctx) => {
             const amount = Number.parseFloat(info.args);
             if (isNaN(amount)) throw new Error('amount는 실수여야 합니다');
