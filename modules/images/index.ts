@@ -360,8 +360,9 @@ export default function moduleInit(mod: BotModule) {
         ['edge-detect'],
         { usage: 'edge-detect', description: '이미지에 edge-detection 효과 적용' },
         (info, ctx) => {
-            ctx.image.grayscale();
-            ctx.image.convolute([[0, 1, 0], [1, -4, 1], [0, 1, 0]]);
+            ctx.image
+            .grayscale()
+            .convolute([[0, 1, 0], [1, -4, 1], [0, 1, 0]]);
         }
     );
 
