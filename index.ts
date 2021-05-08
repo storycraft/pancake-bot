@@ -52,7 +52,8 @@ async function main(credential: BotCredential) {
             loader.load('sudo'),
             loader.load('ytdl'),
             loader.load('hash'),
-            loader.load('images')
+            loader.load('images'),
+            loader.load('school-meal', { apiKey: process.env['BOT_SCHOOL_MEAL_API'] }),
         ]);
     } catch (err) {
         logger.fatal(`모듈 로딩중 오류가 발생했습니다. err: ${err}`);
