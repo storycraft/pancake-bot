@@ -419,7 +419,7 @@ export default function moduleInit(mod: BotModule) {
 
     addImageCommand(
         ['hue'],
-        { usage: 'hue (degree)', description: '이미지 색 회전' },
+        { usage: 'hue (degree)', description: '이미지 색 수정 (HSV cylinder hue rotate)' },
         (info, ctx) => {
             const degree = Number.parseFloat(info.args);
             if (isNaN(degree)) throw new Error('degree는 실수여야 합니다');
@@ -431,8 +431,8 @@ export default function moduleInit(mod: BotModule) {
     );
 
     addImageCommand(
-        ['mix'],
-        { usage: 'mix (css color)', description: '이미지 색상화' },
+        ['overlay'],
+        { usage: 'overlay (css color)', description: '이미지 색상 오버레이' },
         (info, ctx) => {
             if (info.args.length < 1) throw new Error('인자가 부족합니다');
 

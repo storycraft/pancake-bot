@@ -48,7 +48,7 @@ async function ytPlayCommand(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
             );
             return;
         }
-       
+
         const data = await readableToBuffer(readable);
 
         const res = await AttachmentApi.upload(KnownChatType.FILE, 'audio.mp3', data);
