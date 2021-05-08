@@ -1,7 +1,6 @@
-import * as OpenChannelPerms from "../../api/open-channel-perms";
 import { BotModule, ModuleDescriptor } from "../../api/bot/module";
 import { ChatCmdListener, CommandInfo } from "../../api/command";
-import { KnownChatType, TalkChannel } from "node-kakao";
+import { TalkChannel } from "node-kakao";
 
 import fetch from "node-fetch";
 import { TalkContext } from "../../api/bot";
@@ -53,7 +52,7 @@ async function smCommand(apiKey: String, info: CommandInfo, ctx: TalkContext<Tal
         schoolCode = resj.schoolInfo[1].row[0].SD_SCHUL_CODE;
         scCode = resj.schoolInfo[1].row[0].ATPT_OFCDC_SC_CODE;
 
-        if(schoolCode === undefined || scCode === undefined){
+        if(!schoolCode || !scCode){
             throw new Error("학교 이름이 바르지 않은 듯 합니다.");
         }
     } catch(err) {
@@ -64,7 +63,7 @@ async function smCommand(apiKey: String, info: CommandInfo, ctx: TalkContext<Tal
     try {
         let dayStr = '';
 
-        if(args[1] === undefined){
+        if(args.length > 0){
             const today = new Date();
             dayStr = `${today.getFullYear()}${today.getMonth()+1}${today.getDate()}`;
         }else{
