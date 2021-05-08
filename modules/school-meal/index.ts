@@ -33,7 +33,7 @@ export default function moduleInit(mod: BotModule, options: ModuleOptions) {
     mod.commandHandler.any.addListener(
         new ChatCmdListener(
             ['schoolMeal', 'sm'],
-            { usage: 'schoolMeal (학교명) (날짜) \n ex) schoolMeal 배방고등학교 20210507', description: '급식을 가져옵니다'},
+            { usage: 'schoolMeal (학교명) (날짜) \n ex) schoolMeal **고등학교 20210507', description: '급식을 가져옵니다'},
             (info, ctx) => smCommand(apiKey, info, ctx)
         )
     );
