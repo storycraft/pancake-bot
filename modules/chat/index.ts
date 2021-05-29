@@ -85,7 +85,7 @@ export default async function moduleInit(mod: BotModule) {
                 });
             }
         )
-    )
+    );
 
     const filterDBPath = path.join(mod.dataDir, 'filters.json');
     await ensureFile(filterDBPath);

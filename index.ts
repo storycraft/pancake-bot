@@ -48,12 +48,14 @@ async function main(credential: BotCredential) {
             loader.load('misc'),
             loader.load('open-channel-manager'),
             loader.load('inspect'),
-            loader.load('pixiv', { api: { username: process.env['BOT_PIXIV_USERNAME'], password: process.env['BOT_PIXIV_PWD'] } }),
+            // 픽시브 관련 라이브러리 고장으로 비활성화
+            // loader.load('pixiv', { api: { username: process.env['BOT_PIXIV_USERNAME'], password: process.env['BOT_PIXIV_PWD'] } }),
             loader.load('sudo'),
             loader.load('ytdl'),
             loader.load('hash'),
             loader.load('images'),
-            loader.load('school-meal', { apiKey: process.env['BOT_SCHOOL_MEAL_API'] }),
+            // 모듈 미완성으로 인해 비 활성화
+            // loader.load('school-meal', { apiKey: process.env['BOT_SCHOOL_MEAL_API'] }),
         ]);
     } catch (err) {
         logger.fatal(`모듈 로딩중 오류가 발생했습니다. err: ${err}`);

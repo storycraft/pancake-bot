@@ -52,7 +52,7 @@ async function smCommand(apiKey: string, info: CommandInfo, ctx: TalkContext<Tal
         schoolCode = resj.schoolInfo[1].row[0].SD_SCHUL_CODE;
         scCode = resj.schoolInfo[1].row[0].ATPT_OFCDC_SC_CODE;
 
-        if(!schoolCode || !scCode){
+        if (!schoolCode || !scCode) {
             throw new Error("학교 이름이 바르지 않은 듯 합니다.");
         }
     } catch(err) {
@@ -63,10 +63,10 @@ async function smCommand(apiKey: string, info: CommandInfo, ctx: TalkContext<Tal
     try {
         let dayStr = '';
 
-        if(args.length < 2){
+        if (args.length < 2) {
             const today = new Date();
             dayStr = `${today.getFullYear()}${(today.getMonth()+1).toString().padStart(2, '0')}${today.getDate().toString().padStart(2, '0')}`;
-        }else{
+        } else {
             dayStr = args[1];
         }
         
