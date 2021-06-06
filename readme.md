@@ -3,6 +3,21 @@
 
 \* 해당 봇은 `node-kakao-db`를 사용하여 모든 채팅을 기록합니다.
 
+## 실행하기
+봇을 실행하려면 환경변수를 통해 봇 계정 정보를 제공해야 합니다.
+
+BOT_DEVICE_NAME
+카카오톡에 표시되는 기기 이름
+
+BOT_DEVICE_UUID
+기기 UUID
+
+BOT_ACCOUNT_EMAIL
+계정 이메일 주소
+
+BOT_ACCOUNT_PWD
+계정 비밀번호
+
 ## 커스터마이징
 모듈들은 `index.ts` 수정을 통해 추가/제거 할 수 있습니다. 모듈 제작은 [`modules/example/index.ts`](modules/example/index.ts)를 참고하세요.
 
