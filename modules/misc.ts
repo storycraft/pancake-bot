@@ -129,14 +129,16 @@ function rollCommand(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
 
     builder.append(new ReplyContent(ctx.data.chat));
 
-    let max;
-    if (info.args.length > 1)  {
-        max = Number.parseInt(info.args);
+    let limit;
+    if (info.args.length > 0)  {
+        limit = Number.parseInt(info.args);
+    } else {
+        limit = 101;
     }
 
-    if (!max || isNaN(max) || max <= 0) max = 100;
+    if (isNaN(limit)) limit = 101;
 
-    builder.text(`-> ${Math.floor(Math.random() * max)}`);
+    builder.text(`-> ${Math.floor(Math.random() * limit)}`);
 
     ctx.channel.sendChat(builder.build(KnownChatType.REPLY));
 }
