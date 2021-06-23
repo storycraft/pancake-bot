@@ -32,7 +32,7 @@ export class TextCommandParser implements CommandParser {
 
     constructor(_prefix: string, _separator: string) {
         this._exp = new RegExp(
-            `(${escapeRegex(_prefix)})(?:(\\S+)${escapeRegex(_separator)})?(\\S+)(?: (.+))?`
+            `^(${escapeRegex(_prefix)})(?:(\\S+)${escapeRegex(_separator)})?(\\S+)(?: (.+))?`
         );
     }
 
