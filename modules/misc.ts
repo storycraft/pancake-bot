@@ -131,7 +131,7 @@ function rollCommand(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
 
     let limit;
     if (info.args.length > 0)  {
-        limit = Number.parseInt(info.args);
+        limit = Number.parseInt(info.args) + 1;
     } else {
         limit = 101;
     }
