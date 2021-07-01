@@ -4,7 +4,7 @@
  * Copyright (c) storycraft. Licensed under the MIT Licence.
  */
 
-import { KnownChatType, Long, ReplyAttachment, TalkChannel, TalkChatData, util } from "node-kakao";
+import { ChatBuilder, KnownChatType, Long, OpenChannelUserPerm, ReplyAttachment, ReplyContent, TalkChannel, TalkChatData, TalkOpenChannel, util } from "node-kakao";
 import { BotModule, ModuleDescriptor, TalkContext } from "../../api/bot";
 import { Logger } from "../../api/logger";
 import FileAsync from 'lowdb/adapters/FileAsync';
@@ -13,7 +13,7 @@ import * as path from 'path';
 import { ensureFile } from "fs-extra";
 import { ChatFilterManager } from "./filter";
 import * as OpenChannelPerms from '../../api/open-channel-perms';
-import { ChatCmdListener } from "../../api/command";
+import { ChatCmdListener, CommandInfo } from "../../api/command";
 import { LONG_CHAT_SPLITTER } from "../../api/util";
 
 export const MODULE_DESC: ModuleDescriptor = {
@@ -27,6 +27,15 @@ export const MODULE_DESC: ModuleDescriptor = {
 
 export default async function moduleInit(mod: BotModule) {
     mod.on('chat', (ctx) => logChat(ctx, mod.logger));
+
+    mod.commandHandler.open.addListener(
+        new ChatCmdListener(
+            ['hide'],
+            { usage: 'hide [챗 logId]', description: '선택된 채팅 또는 인자로 제공된 id 채팅을 가립니다', executeLevel: OpenChannelPerms.MANAGERS },
+            (info, ctx) => hideChat(info, ctx)
+        )
+    );
+    
     mod.commandHandler.any.addListener(
         new ChatCmdListener(
             ['chatlog', 'chatlogs'],
@@ -105,4 +114,73 @@ function logChat({ data, channel }: TalkContext<TalkChannel>, chatLogger: Logger
     }
 
     chatLogger.info(`${channel.info.type} | id: ${channel.channelId} (${channel.getDisplayName()}) userId: ${data.chat.sender.userId} (${senderInfo?.nickname || ''}) type: ${data.chat.type} text: ${data.chat.text} attachment: ${util.JsonUtil.stringifyLoseless(data.chat.attachment)}`);
+}
+
+async function hideChat(info: CommandInfo, ctx: TalkContext<TalkOpenChannel>) {
+    let logId: Long | undefined;
+    if (ctx.data.originalType === KnownChatType.REPLY) {
+        const reply = ctx.data.attachment<ReplyAttachment>();
+        if (reply['src_logId']) {
+            logId = reply['src_logId'];
+        } else {
+            await ctx.channel.sendChat(
+                new ChatBuilder()
+                .append(new ReplyContent(ctx.data.chat))
+                .text('채팅 정보를 받아오지 못했습니다')
+                .build(KnownChatType.REPLY)
+            );
+
+            return;
+        }
+    } else if (info.args.length > 0) {
+        const parsed = Long.fromString(info.args);
+        if (!parsed.isZero()) logId = parsed;
+    }
+
+    if (!logId) {
+        await ctx.channel.sendChat(
+            new ChatBuilder()
+            .append(new ReplyContent(ctx.data.chat))
+            .text('가릴 채팅을 선택해주세요')
+            .build(KnownChatType.REPLY)
+        );
+
+        return;
+    }
+
+    const clientInfo = ctx.channel.getUserInfo(ctx.bot.client.clientUser);
+    if (!clientInfo || clientInfo.perm !== OpenChannelUserPerm.MANAGER && clientInfo.perm !== OpenChannelUserPerm.OWNER) {
+        await ctx.channel.sendChat(
+            new ChatBuilder()
+            .append(new ReplyContent(ctx.data.chat))
+            .text('봇에 권한이 없습니다')
+            .build(KnownChatType.REPLY)
+        );
+
+        return;
+    }
+
+    const hideRes = await ctx.channel.hideChat({ type: 1, logId });
+    if (!hideRes.success) {
+        await ctx.channel.sendChat(
+            new ChatBuilder()
+            .append(new ReplyContent(ctx.data.chat))
+            .text(`채팅을 가리지 못했습니다. status: ${hideRes.status}`)
+            .build(KnownChatType.REPLY)
+        );
+
+        return;
+    }
+
+    const cmdHideRes = await ctx.channel.hideChat(ctx.data.chat);
+    if (!cmdHideRes.success) {
+        await ctx.channel.sendChat(
+            new ChatBuilder()
+            .append(new ReplyContent(ctx.data.chat))
+            .text(`커맨드 채팅을 가리지 못했습니다. status: ${cmdHideRes.status}`)
+            .build(KnownChatType.REPLY)
+        );
+
+        return;
+    }
 }
