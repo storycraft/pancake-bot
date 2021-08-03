@@ -23,7 +23,7 @@ export const MODULE_DESC: ModuleDescriptor = {
 
 }
 
-const SORRY_FOR_THE_INCONVENIENCE = join(__dirname, '..', 'resources', 'forbidden.png');
+const SORRY_FOR_THE_INCONVENIENCE = join(__dirname, 'resources', 'forbidden.png');
 
 export default async function moduleInit(mod: BotModule, options: { database: LowdbAsync<DBSchema> }) {
     const urlRegex = /(http(s)?:\/\/?\/?[^\s]+)/g;
