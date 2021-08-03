@@ -103,7 +103,7 @@ export default async function moduleInit(mod: BotModule, options: { database: Lo
     });
 
     async function processGossip(ctx: TalkContext<TalkChannel>, multiplier: number = 1) {
-        if (!await (studyManager.canStudy(ctx.data.chat))) return;
+        if (!studyManager.canStudy(ctx.data.chat)) return;
 
         let text = ctx.data.text.trim();
         let lastMessage = lastMessageMap.get(ctx.channel);
@@ -161,7 +161,7 @@ export default async function moduleInit(mod: BotModule, options: { database: Lo
             await studyManager.updateChatKeyHashConnectionRefCount(textHash, studyKey, newStudyKeyRefCount);
         }
 
-        if (!(await studyManager.getChannelResponseFlag(ctx.channel))) return;
+        if (!studyManager.getChannelResponseFlag(ctx.channel)) return;
 
         let totalKeyRefCount = 0;
 

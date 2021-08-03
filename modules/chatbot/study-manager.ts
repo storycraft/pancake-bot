@@ -14,7 +14,7 @@ export class StudyManager {
 
     }
 
-    async canStudy(chat: Chat) {
+    canStudy(chat: Chat) {
         return chat.text && chat.type === KnownChatType.TEXT;
     }
 
@@ -31,14 +31,14 @@ export class StudyManager {
     }
 
     getKeyEntry() {
-        return this.dbEntry.get('keys').defaultTo({});
+        return this.dbEntry.get('keys');
     }
 
     getSettingsEntry() {
         return this.dbEntry.get('settings');
     }
 
-    async getChannelResponseFlag(channel: Channel): Promise<boolean> {
+    getChannelResponseFlag(channel: Channel): boolean {
         let entry = this.getSettingsEntry();
 
         if (!entry.get(channel.channelId.toString()).value()) return false;
