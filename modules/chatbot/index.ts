@@ -103,7 +103,7 @@ export default async function moduleInit(mod: BotModule, options: { database: Lo
     });
 
     async function processGossip(ctx: TalkContext<TalkChannel>, multiplier: number = 1) {
-        if (!studyManager.canStudy(ctx.data.chat)) return;
+        if (!studyManager.canStudy(ctx.data.chat) || ctx.data.text.startsWith('-')) return;
 
         let text = ctx.data.text.trim();
         let lastMessage = lastMessageMap.get(ctx.channel);
