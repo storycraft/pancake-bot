@@ -30,16 +30,24 @@ export class StudyManager {
         await this.dbEntry.set('total', count).write();
     }
 
-    getKeyEntry() {
+    async getKeyEntry() {
+        if (!this.dbEntry.has('keys').value()) {
+            await this.dbEntry.set('keys', {}).write();
+        }
+
         return this.dbEntry.get('keys');
     }
 
-    getSettingsEntry() {
+    async getSettingsEntry() {
+        if (!this.dbEntry.has('settings').value()) {
+            await this.dbEntry.set('settings', {}).write();
+        }
+
         return this.dbEntry.get('settings');
     }
 
-    getChannelResponseFlag(channel: Channel): boolean {
-        let entry = this.getSettingsEntry();
+    async getChannelResponseFlag(channel: Channel): Promise<boolean> {
+        let entry = await this.getSettingsEntry();
 
         if (!entry.get(channel.channelId.toString()).value()) return false;
 
@@ -47,7 +55,7 @@ export class StudyManager {
     }
 
     async setChannelResponseFlag(channel: Channel, flag: boolean) {
-        let entry = this.getSettingsEntry();
+        let entry = await this.getSettingsEntry();
 
         await entry.set(channel.channelId.toString(), flag).write();
     }
@@ -58,24 +66,24 @@ export class StudyManager {
         return hash.digest('hex');
     }
 
-    getChatKey(text: string): ChatKey | null {
+    async getChatKey(text: string): Promise<ChatKey | null> {
         return this.getChatKeyByHash(this.transformTextToKey(text));
     }
 
-    getChatKeyByHash(hash: string): ChatKey | null {
-        let keyEntry = this.getKeyEntry();
+    async getChatKeyByHash(hash: string): Promise<ChatKey | null> {
+        let keyEntry = await this.getKeyEntry();
 
         return keyEntry.get(hash, null).value();
     }
 
     async setChatKey(chatKey: ChatKey): Promise<void> {
-        let keyEntry = this.getKeyEntry();
+        let keyEntry = await this.getKeyEntry();
 
         await keyEntry.set(this.transformTextToKey(chatKey.text), chatKey).write();
     }
 
-    getChatKeyHashConnectionRefCount(hash: string, connectionHash: string): number {
-        let keyEntry = this.getKeyEntry();
+    async getChatKeyHashConnectionRefCount(hash: string, connectionHash: string): Promise<number> {
+        let keyEntry = await this.getKeyEntry();
 
         if (!keyEntry.has(hash).value()) return 0;
 
@@ -93,7 +101,7 @@ export class StudyManager {
     }
 
     async updateChatKeyHashConnectionRefCount(hash: string, connectionHash: string, refCount: number): Promise<boolean> {
-        let keyEntry = this.getKeyEntry();
+        let keyEntry = await this.getKeyEntry();
 
         if (!keyEntry.has(hash).value()) return false;
 

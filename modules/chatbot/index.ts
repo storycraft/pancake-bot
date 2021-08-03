@@ -72,7 +72,7 @@ export default async function moduleInit(mod: BotModule, options: { database: Lo
                 return;
             }
 
-            let chatkey = studyManager.getChatKey(info.args);
+            let chatkey = await studyManager.getChatKey(info.args);
 
             if (!chatkey) {
                 await ctx.channel.sendChat(`${info.args} 는 학습되지 않았습니다`);
@@ -128,19 +128,19 @@ export default async function moduleInit(mod: BotModule, options: { database: Lo
         }
 
         if (lastText !== text || Math.random() < 0.1) {
-            let newLastChatRefCount: number = studyManager.getChatKeyHashConnectionRefCount(lastTextHash, textHash) + 1;
+            let newLastChatRefCount: number = await studyManager.getChatKeyHashConnectionRefCount(lastTextHash, textHash) + 1;
             await studyManager.updateChatKeyHashConnectionRefCount(lastTextHash, textHash, newLastChatRefCount);
         }
 
 
 
-        let chatKey = studyManager.getChatKeyByHash(textHash);
+        let chatKey = await studyManager.getChatKeyByHash(textHash);
         if (!chatKey) {
             let wordList = text.split(' ');
 
             if (wordList.length < 2) return;
 
-            chatKey = studyManager.getChatKey(wordList[Math.floor(wordList.length / 2)]);
+            chatKey = await studyManager.getChatKey(wordList[Math.floor(wordList.length / 2)]);
         }
 
         if (!chatKey) return;
@@ -150,14 +150,14 @@ export default async function moduleInit(mod: BotModule, options: { database: Lo
 
         if (random < 10240) { // LEARN SOMETHING FROM AFTER TREE
             let targetKey = connectionKeys[Math.min(Math.floor(connectionKeys.length * Math.random()), connectionKeys.length - 1)];
-            let targetChatKey = studyManager.getChatKeyByHash(targetKey);
+            let targetChatKey = await studyManager.getChatKeyByHash(targetKey);
 
             if (!targetChatKey) return;
 
             let targetKeyConnectionKeys = Object.keys(targetChatKey.connection);
             let studyKey = targetKeyConnectionKeys[Math.min(Math.floor(targetKeyConnectionKeys.length * Math.random()), targetKeyConnectionKeys.length - 1)];
 
-            let newStudyKeyRefCount = studyManager.getChatKeyHashConnectionRefCount(textHash, studyKey) + 1;
+            let newStudyKeyRefCount = await studyManager.getChatKeyHashConnectionRefCount(textHash, studyKey) + 1;
             await studyManager.updateChatKeyHashConnectionRefCount(textHash, studyKey, newStudyKeyRefCount);
         }
 
@@ -194,7 +194,7 @@ export default async function moduleInit(mod: BotModule, options: { database: Lo
 
         if (targetKey === '') return;
 
-        let targetChatKey = studyManager.getChatKeyByHash(targetKey);
+        let targetChatKey = await studyManager.getChatKeyByHash(targetKey);
 
         if (!targetChatKey) return;
 
