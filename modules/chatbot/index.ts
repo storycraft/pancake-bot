@@ -74,11 +74,14 @@ export default async function moduleInit(mod: BotModule, options: { database: Lo
 
             let chatkey = studyManager.getChatKey(info.args);
 
-            if (!chatkey) ctx.channel.sendChat(`${info.args} 는 학습되지 않았습니다`);
+            if (!chatkey) {
+                await ctx.channel.sendChat(`${info.args} 는 학습되지 않았습니다`);
+                return;
+            }
 
             let str = `${info.args} 의 학습정보\n\n`;
 
-            let connection = chatkey!.connection;
+            let connection = chatkey.connection;
 
             let keyTotal = 0;
 
