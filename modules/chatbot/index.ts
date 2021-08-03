@@ -121,7 +121,7 @@ export default async function moduleInit(mod: BotModule, options: { database: Lo
 
         let random: number = crypto.randomBytes(2).readUInt16LE(0); // 0 - 65535
 
-        let lastChatKey = studyManager.getChatKeyByHash(lastTextHash);
+        let lastChatKey = await studyManager.getChatKeyByHash(lastTextHash);
 
         if (!lastChatKey) {
             await studyManager.setChatKey(studyManager.createNewChatKey(lastText));
