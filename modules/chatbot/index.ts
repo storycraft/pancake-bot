@@ -41,7 +41,7 @@ export default async function moduleInit(mod: BotModule, options: { database: Lo
             usage: 'chat-toggle'
         },
         async (info, ctx) => {
-            let newFlag = !studyManager.getChannelResponseFlag(ctx.channel);
+            let newFlag = !(await studyManager.getChannelResponseFlag(ctx.channel));
 
             await studyManager.setChannelResponseFlag(ctx.channel, newFlag);
 
