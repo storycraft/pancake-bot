@@ -65,7 +65,7 @@ export class StudyManager {
     getChatKeyByHash(hash: string): ChatKey | null {
         let keyEntry = this.getKeyEntry();
 
-        return keyEntry.get(hash).defaultTo(null).value();
+        return keyEntry.get(hash, null).value();
     }
 
     async setChatKey(chatKey: ChatKey): Promise<void> {
