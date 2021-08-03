@@ -7,10 +7,11 @@
 import * as Crypto from 'crypto';
 import { LowdbAsync } from 'lowdb';
 import { Channel, Chat, KnownChatType } from 'node-kakao';
+import { DatabaseEntry } from './database';
 
 export class StudyManager {
     
-    constructor(private dbEntry: LowdbAsync<DBSchema>) {
+    constructor(private dbEntry: DatabaseEntry) {
 
     }
 
@@ -22,42 +23,36 @@ export class StudyManager {
         return this.getChannelResponseFlag(channel);
     }
 
-    getTotalMessage() {
-        return this.dbEntry.get('total').defaultTo(0).value();
+    async getTotalMessage(): Promise<number> {
+        if (!(await this.dbEntry.has('total'))) return 0;
+        
+        return (await this.dbEntry.get('total')) as number;
     }
 
     async setTotalMessage(count: number): Promise<void> {
-        await this.dbEntry.set('total', count).write();
+        await this.dbEntry.set('total', count);
     }
 
-    async getKeyEntry() {
-        if (!this.dbEntry.has('keys').value()) {
-            await this.dbEntry.set('keys', {}).write();
-        }
-
-        return this.dbEntry.get('keys');
+    async getKeyEntry(): Promise<DatabaseEntry> {
+        return this.dbEntry.getEntry('keys');
     }
 
-    async getSettingsEntry() {
-        if (!this.dbEntry.has('settings').value()) {
-            await this.dbEntry.set('settings', {}).write();
-        }
-
-        return this.dbEntry.get('settings');
+    async getSettingsEntry(): Promise<DatabaseEntry> {
+        return this.dbEntry.getEntry('settings');
     }
 
     async getChannelResponseFlag(channel: Channel): Promise<boolean> {
         let entry = await this.getSettingsEntry();
 
-        if (!entry.get(channel.channelId.toString()).value()) return false;
+        if (!await (entry.has(channel.channelId.toString()))) return false;
 
-        return true;
+        return (await entry.get(channel.channelId.toString())) as boolean;
     }
 
-    async setChannelResponseFlag(channel: Channel, flag: boolean) {
+    async setChannelResponseFlag(channel: Channel, flag: boolean): Promise<boolean> {
         let entry = await this.getSettingsEntry();
 
-        await entry.set(channel.channelId.toString(), flag).write();
+        return entry.set(channel.channelId.toString(), flag);
     }
 
     transformTextToKey(text: string): string {
@@ -73,27 +68,31 @@ export class StudyManager {
     async getChatKeyByHash(hash: string): Promise<ChatKey | null> {
         let keyEntry = await this.getKeyEntry();
 
-        return keyEntry.get(hash, null).value();
+        if (!(await keyEntry.has(hash))) return null;
+
+        return (await keyEntry.get(hash)) as ChatKey;
     }
 
     async setChatKey(chatKey: ChatKey): Promise<void> {
         let keyEntry = await this.getKeyEntry();
 
-        await keyEntry.set(this.transformTextToKey(chatKey.text), chatKey).write();
+        await keyEntry.set(this.transformTextToKey(chatKey.text), chatKey);
     }
 
     async getChatKeyHashConnectionRefCount(hash: string, connectionHash: string): Promise<number> {
         let keyEntry = await this.getKeyEntry();
 
-        if (!keyEntry.has(hash).value()) return 0;
+        if (!(await keyEntry.has(hash))) return 0;
 
-        let chatKeyEntry = keyEntry.get(hash);
+        let chatKeyEntry = await keyEntry.getEntry(hash);
 
-        let connectionEntry = chatKeyEntry.get('connection');
+        if (!chatKeyEntry) return 0;
 
-        if (!connectionEntry.has(connectionHash).value()) return 0;
+        let connectionEntry = await chatKeyEntry.getEntry('connection');
 
-        return connectionEntry.get(connectionHash).value();
+        if (!connectionEntry) return 0;
+
+        return (await connectionEntry.get(connectionHash)) as number;
     }
 
     async updateChatKeyConnectionRefCount(text: string, connectionHash: string, refCount: number): Promise<boolean> {
@@ -103,14 +102,12 @@ export class StudyManager {
     async updateChatKeyHashConnectionRefCount(hash: string, connectionHash: string, refCount: number): Promise<boolean> {
         let keyEntry = await this.getKeyEntry();
 
-        if (!keyEntry.has(hash).value()) return false;
+        if (!(await keyEntry.has(hash))) return false;
 
-        let chatKeyEntry = keyEntry.get(hash);
-        let connectionEntry = chatKeyEntry.get('connection');
+        let chatKeyEntry = await keyEntry.getEntry(hash);
+        let connectionEntry = await chatKeyEntry.getEntry('connection');
 
-        await connectionEntry.set(connectionHash, refCount).write();
-
-        return true;
+        return connectionEntry.set(connectionHash, refCount);
     }
 
     createNewChatKey(text: string): ChatKey {
@@ -119,7 +116,6 @@ export class StudyManager {
             'connection': {}
         }
     }
-
 }
 
 export type DBSchema = {

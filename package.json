@@ -27,6 +27,7 @@
     "entities": "^2.2.0",
     "eventemitter3": "^4.0.7",
     "expression-eval": "^4.0.0",
+    "firebase": "^8.8.1",
     "fs-extra": "^9.1.0",
     "image-size": "^1.0.0",
     "isolated-vm": "^4.1.0",

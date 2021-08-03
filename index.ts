@@ -12,8 +12,8 @@ import * as os from 'os';
 import * as readline from 'readline';
 import { BotModuleLoader } from './api/bot/loader';
 import { NodeKakaoDB } from 'node-kakao-db';
-import low from 'lowdb';
-import FileAsync from 'lowdb/adapters/FileAsync';
+import firebase from "firebase";
+import { FirebaseDatabase } from './modules/chatbot/database';
 
 async function main(credential: BotCredential) {
     const dbClient = new NodeKakaoDB({
@@ -40,7 +40,9 @@ async function main(credential: BotCredential) {
 
     const bot = botRes.result;
 
-    const chatDB = await low(new FileAsync('database.json'));
+    const app = firebase.initializeApp({
+        databaseURL: process.env['FIREBASE_CHAT_BOT_RT_DB']
+    })
 
     // 모듈 로딩
     const loader = new BotModuleLoader(bot, 'modules');
@@ -48,7 +50,7 @@ async function main(credential: BotCredential) {
         await Promise.all([
             loader.load('chat'),
             loader.load('util', { profile: {} as OpenLinkProfiles }),
-            loader.load('chatbot', { database: chatDB }),
+            loader.load('chatbot', { database: new FirebaseDatabase(app.database()) }),
             loader.load('man'),
             loader.load('misc'),
             loader.load('open-channel-manager'),

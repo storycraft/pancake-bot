@@ -6,13 +6,13 @@
 
 import { BotModule, ModuleDescriptor, TalkContext } from "../../api/bot";
 import { ChatCmdListener } from "../../api/command";
-import { LowdbAsync } from "lowdb"
 import { join } from "path";
 import * as fs from "fs";
 import { promisify } from "util";
-import { DBSchema, StudyManager } from "./study-manager";
+import { StudyManager } from "./study-manager";
 import { Channel, Chat, KnownChatType, TalkChannel, TalkChatData } from "node-kakao";
 import * as crypto from "crypto";
+import { DatabaseEntry } from "./database";
 
 export const MODULE_DESC: ModuleDescriptor = {
 
@@ -25,7 +25,7 @@ export const MODULE_DESC: ModuleDescriptor = {
 
 const SORRY_FOR_THE_INCONVENIENCE = join(__dirname, 'resources', 'forbidden.png');
 
-export default async function moduleInit(mod: BotModule, options: { database: LowdbAsync<DBSchema> }) {
+export default async function moduleInit(mod: BotModule, options: { database: DatabaseEntry }) {
     const urlRegex = /(http(s)?:\/\/?\/?[^\s]+)/g;
     const sorryForTheInconvenienceImg = await promisify(fs.readFile)(SORRY_FOR_THE_INCONVENIENCE, { encoding: null });
 
@@ -55,8 +55,8 @@ export default async function moduleInit(mod: BotModule, options: { database: Lo
             description: '헛소리 학습 정보',
             usage: 'chatbot-info'
         },
-        (info, ctx) => {
-            ctx.channel.sendChat(`전체 학습한 채팅량: ${studyManager.getTotalMessage()} (개)`).then();
+        async (info, ctx) => {
+            ctx.channel.sendChat(`전체 학습한 채팅량: ${await studyManager.getTotalMessage()} (개)`).then();
         }
     ));
 
@@ -89,7 +89,7 @@ export default async function moduleInit(mod: BotModule, options: { database: Lo
                 keyTotal += (connection[key] || 0);
             }
 
-            let ratio = (keyTotal / studyManager.getTotalMessage()) * 100;
+            let ratio = (keyTotal / await studyManager.getTotalMessage()) * 100;
             let percent = Math.max(Math.min((Object.keys(connection).length / keyTotal) * Math.min(Object.keys(connection).length / 3, 1) * 0.72, 0.7), 0.17) * 100;
 
             str += `\n\n전체 중 비율 ${ratio.toFixed(2)} %\n\n응답률: ${percent.toFixed(2)} %`;
@@ -111,7 +111,7 @@ export default async function moduleInit(mod: BotModule, options: { database: Lo
 
         if (!lastMessage) return;
 
-        let total = studyManager.getTotalMessage();
+        let total = await studyManager.getTotalMessage();
         await studyManager.setTotalMessage(total + 1);
 
         let lastText = lastMessage.text.trim();
@@ -143,7 +143,7 @@ export default async function moduleInit(mod: BotModule, options: { database: Lo
             chatKey = await studyManager.getChatKey(wordList[Math.floor(wordList.length / 2)]);
         }
 
-        if (!chatKey) return;
+        if (!chatKey || !chatKey.connection) return;
 
         let connectionKeys = Object.keys(chatKey.connection);
         if (connectionKeys.length < 1) return;
@@ -161,7 +161,7 @@ export default async function moduleInit(mod: BotModule, options: { database: Lo
             await studyManager.updateChatKeyHashConnectionRefCount(textHash, studyKey, newStudyKeyRefCount);
         }
 
-        if (!studyManager.getChannelResponseFlag(ctx.channel)) return;
+        if (!(await studyManager.getChannelResponseFlag(ctx.channel))) return;
 
         let totalKeyRefCount = 0;
 
