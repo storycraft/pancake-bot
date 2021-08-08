@@ -10,7 +10,7 @@ import { join } from "path";
 import * as fs from "fs";
 import { promisify } from "util";
 import { StudyManager } from "./study-manager";
-import { Channel, Chat, KnownChatType, TalkChannel, TalkChatData } from "node-kakao";
+import { Channel, Chat, ChatBuilder, KnownChatType, ReplyContent, TalkChannel, TalkChatData } from "node-kakao";
 import * as crypto from "crypto";
 import { DatabaseEntry } from "./database";
 
@@ -102,8 +102,8 @@ export default async function moduleInit(mod: BotModule, options: { database: Da
         await processGossip(ctx);
     });
 
-    async function processGossip(ctx: TalkContext<TalkChannel>, multiplier: number = 1) {
-        if (!studyManager.canStudy(ctx.data.chat) || ctx.data.text.startsWith('-')) return;
+    async function processGossip(ctx: TalkContext<TalkChannel>, multiplier: number = 1, chain: boolean = false) {
+        if (!chain && (!studyManager.canStudy(ctx.data.chat) || ctx.data.text.startsWith('-'))) return;
 
         let text = ctx.data.text.trim();
         let lastMessage = lastMessageMap.get(ctx.channel);
@@ -216,9 +216,13 @@ export default async function moduleInit(mod: BotModule, options: { database: Da
             return;
         }
 
-        let sentChatRes = await ctx.channel.sendChat(nonSensitiveText);
+        const builder = new ChatBuilder();
+        builder.append(new ReplyContent(ctx.data.chat));
+        builder.text(nonSensitiveText);
+
+        let sentChatRes = await ctx.channel.sendChat(builder.build(KnownChatType.REPLY));
         if (!sentChatRes.success) return;
 
-        await processGossip({ ...ctx, data: new TalkChatData(sentChatRes.result) }, 1.1);
+        await processGossip({ ...ctx, data: new TalkChatData(sentChatRes.result) }, 1.1, true);
     }
 }
