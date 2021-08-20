@@ -4,7 +4,7 @@
  * Copyright (c) storycraft. Licensed under the MIT Licence.
  */
 
-import { Writable } from "node:stream";
+import { Writable } from "stream";
 import { PromiseWritable } from "promise-writable";
 import * as fs from 'fs/promises';
 import * as fsExtra from 'fs-extra';
