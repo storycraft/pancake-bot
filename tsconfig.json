@@ -4,6 +4,7 @@
       "ES2018",
       "DOM"
     ],
+    "types": ["node"],
     "module": "commonjs",
     "moduleResolution": "node",
     "target": "ESNext",
