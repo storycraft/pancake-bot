@@ -60,6 +60,7 @@ async function main(credential: BotCredential) {
             loader.load('sudo'),
             loader.load('ytdl'),
             loader.load('hash'),
+            loader.load('tts'),
             loader.load('images'),
             // 모듈 미완성으로 인해 비 활성화
             // loader.load('school-meal', { apiKey: process.env['BOT_SCHOOL_MEAL_API'] }),
