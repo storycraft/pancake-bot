@@ -10,6 +10,7 @@ import { CommandHelpMap, CommandInfo, CommandListener } from "../../api/command"
 import { ImageContext, TalkImageContext } from "./context";
 import jimp from "jimp";
 import { LONG_CHAT_SPLITTER } from "../../api/util";
+import { GifCodec, GifUtil } from "gifwrap";
 
 export function createChatImageProcessor<C extends TalkChannel>(
     handler: (info: CommandInfo, ctx: TalkImageContext<C>) => void | Promise<void>
@@ -27,21 +28,21 @@ export function createChatImageProcessor<C extends TalkChannel>(
         if (!chat) {
             await ctx.channel.sendChat(
                 new ChatBuilder()
-                .append(new ReplyContent(ctx.data.chat))
-                .text('채팅을 선택해주세요')
-                .build(KnownChatType.REPLY)
+                    .append(new ReplyContent(ctx.data.chat))
+                    .text('채팅을 선택해주세요')
+                    .build(KnownChatType.REPLY)
             );
             return;
         }
-        
+
         const selected = new TalkChatData(chat);
-        
+
         if (selected.originalType !== KnownChatType.PHOTO && selected.originalType !== KnownChatType.MULTIPHOTO) {
             await ctx.channel.sendChat(
                 new ChatBuilder()
-                .append(new ReplyContent(ctx.data.chat))
-                .text('사진을 선택해주세요')
-                .build(KnownChatType.REPLY)
+                    .append(new ReplyContent(ctx.data.chat))
+                    .text('사진을 선택해주세요')
+                    .build(KnownChatType.REPLY)
             );
             return;
         }
@@ -51,9 +52,9 @@ export function createChatImageProcessor<C extends TalkChannel>(
         if (medias.length - filtered.length > 0) {
             await ctx.channel.sendChat(
                 new ChatBuilder()
-                .append(new ReplyContent(ctx.data.chat))
-                .text(`용량이 큰 사진 ${medias.length - filtered.length}장을 건너뜁니다`)
-                .build(KnownChatType.REPLY)
+                    .append(new ReplyContent(ctx.data.chat))
+                    .text(`용량이 큰 사진 ${medias.length - filtered.length}장을 건너뜁니다`)
+                    .build(KnownChatType.REPLY)
             );
         }
 
@@ -71,16 +72,37 @@ export function createChatImageProcessor<C extends TalkChannel>(
                 const buffer = await stream.ReadStreamUtil.all(streamRes.result);
                 const image = await jimp.read(Buffer.from(buffer));
 
-                await handler(info, { image, talkCtx: ctx });
-                const data = await image.getBufferAsync('image/png');
+                if (image.getMIME() == jimp.MIME_GIF) {
+                    const codec = new GifCodec();
+                    const gif = await codec.decodeGif(Buffer.from(buffer));
 
-                res.push({
-                    name: 'result.png',
-                    ext: 'png',
-                    data,
-                    width: image.getWidth(),
-                    height: image.getHeight()
-                });
+                    for (const frame of gif.frames) {
+                        const jimpFrame = GifUtil.shareAsJimp(jimp, frame);
+
+                        await handler(info, { image: jimpFrame, talkCtx: ctx });
+                    }
+
+                    const encoded = await codec.encodeGif(gif.frames, { loops: gif.loops, colorScope: gif.colorScope });
+
+                    res.push({
+                        name: 'result.gif',
+                        ext: 'png',
+                        data: encoded.buffer,
+                        width: encoded.width,
+                        height: encoded.height
+                    });
+                } else {
+                    await handler(info, { image, talkCtx: ctx });
+                    const data = await image.getBufferAsync('image/png');
+
+                    res.push({
+                        name: 'result.png',
+                        ext: 'png',
+                        data,
+                        width: image.getWidth(),
+                        height: image.getHeight()
+                    });
+                }
             } catch (err) {
                 errors.push(err);
             }
@@ -104,9 +126,9 @@ export function createChatImageProcessor<C extends TalkChannel>(
         if (res.length < 1) {
             await ctx.channel.sendChat(
                 new ChatBuilder()
-                .append(new ReplyContent(ctx.data.chat))
-                .text(`처리된 이미지가 없습니다`)
-                .build(KnownChatType.REPLY)
+                    .append(new ReplyContent(ctx.data.chat))
+                    .text(`처리된 이미지가 없습니다`)
+                    .build(KnownChatType.REPLY)
             );
         } else {
             if (res.length === 1) {
@@ -118,7 +140,7 @@ export function createChatImageProcessor<C extends TalkChannel>(
             const builder = new ChatBuilder();
             if (senderInfo) builder.append(new MentionContent(senderInfo)).text(' ');
             builder.text(`처리 완료. ${Date.now() - startTime} ms`);
-            
+
             await ctx.channel.sendChat(builder.build(KnownChatType.TEXT));
         }
     }

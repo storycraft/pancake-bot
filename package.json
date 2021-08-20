@@ -29,6 +29,8 @@
     "expression-eval": "^4.0.0",
     "firebase": "^8.8.1",
     "fs-extra": "^9.1.0",
+    "gifwrap": "^0.9.2",
+    "google-tts-api": "^2.0.2",
     "image-size": "^1.0.0",
     "isolated-vm": "^4.1.0",
     "jimp": "^0.16.1",
