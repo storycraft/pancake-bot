@@ -24,7 +24,7 @@ export default function moduleInit(mod: BotModule) {
         new ChatCmdListener(
             ['tts'],
             { usage: 'tts [텍스트]', description: 'tts (영어 en-US)' },
-            (info, ctx) => handleTTSCommand(info, ctx, 'en-US')
+            (info, ctx) => handleTTSCommand(info, ctx, 'en')
         )
     );
 
@@ -32,7 +32,7 @@ export default function moduleInit(mod: BotModule) {
         new ChatCmdListener(
             ['tts-ko'],
             { usage: 'tts-ko [텍스트]', description: 'tts (한국어 ko-KR)' },
-            (info, ctx) => handleTTSCommand(info, ctx, 'ko-KR')
+            (info, ctx) => handleTTSCommand(info, ctx, 'ko')
         )
     );
 
@@ -48,7 +48,7 @@ export default function moduleInit(mod: BotModule) {
         new ChatCmdListener(
             ['tts-zh'],
             { usage: 'tts-zh [텍스트]', description: 'tts (중국어 zh-TW)' },
-            (info, ctx) => handleTTSCommand(info, ctx, 'zh-TW')
+            (info, ctx) => handleTTSCommand(info, ctx, 'zh')
         )
     );
 
@@ -56,7 +56,7 @@ export default function moduleInit(mod: BotModule) {
         new ChatCmdListener(
             ['tts-nl'],
             { usage: 'tts-nl [텍스트]', description: 'tts (네덜란드어 nl-NL)' },
-            (info, ctx) => handleTTSCommand(info, ctx, 'nl-NL')
+            (info, ctx) => handleTTSCommand(info, ctx, 'nl')
         )
     );
 
@@ -64,7 +64,7 @@ export default function moduleInit(mod: BotModule) {
         new ChatCmdListener(
             ['tts-es'],
             { usage: 'tts-es [텍스트]', description: 'tts (스페인어 es-ES)' },
-            (info, ctx) => handleTTSCommand(info, ctx, 'es-ES')
+            (info, ctx) => handleTTSCommand(info, ctx, 'es')
         )
     );
 
@@ -72,7 +72,7 @@ export default function moduleInit(mod: BotModule) {
         new ChatCmdListener(
             ['tts-de'],
             { usage: 'tts-de [텍스트]', description: 'tts (독일어 de-DE)' },
-            (info, ctx) => handleTTSCommand(info, ctx, 'de-DE')
+            (info, ctx) => handleTTSCommand(info, ctx, 'de')
         )
     );
 
@@ -80,7 +80,7 @@ export default function moduleInit(mod: BotModule) {
         new ChatCmdListener(
             ['tts-fr'],
             { usage: 'tts-fr [텍스트]', description: 'tts (프랑스어 fr-FR)' },
-            (info, ctx) => handleTTSCommand(info, ctx, 'fr-FR')
+            (info, ctx) => handleTTSCommand(info, ctx, 'fr')
         )
     );
 
@@ -88,7 +88,7 @@ export default function moduleInit(mod: BotModule) {
         new ChatCmdListener(
             ['tts-hi'],
             { usage: 'tts-hi [텍스트]', description: 'tts (힌디어 hi-IN)' },
-            (info, ctx) => handleTTSCommand(info, ctx, 'hi-IN')
+            (info, ctx) => handleTTSCommand(info, ctx, 'hi')
         )
     );
 
@@ -96,7 +96,7 @@ export default function moduleInit(mod: BotModule) {
         new ChatCmdListener(
             ['tts-it'],
             { usage: 'tts-it [텍스트]', description: 'tts (이탈리아어 it-IT)' },
-            (info, ctx) => handleTTSCommand(info, ctx, 'it-IT')
+            (info, ctx) => handleTTSCommand(info, ctx, 'it')
         )
     );
 
@@ -104,7 +104,7 @@ export default function moduleInit(mod: BotModule) {
         new ChatCmdListener(
             ['tts-pl'],
             { usage: 'tts-pl [텍스트]', description: 'tts (폴란드어 pl-PL)' },
-            (info, ctx) => handleTTSCommand(info, ctx, 'pl-PL')
+            (info, ctx) => handleTTSCommand(info, ctx, 'pl')
         )
     );
 
@@ -112,7 +112,7 @@ export default function moduleInit(mod: BotModule) {
         new ChatCmdListener(
             ['tts-ru'],
             { usage: 'tts-ru [텍스트]', description: 'tts (러시아어 ru-RU)' },
-            (info, ctx) => handleTTSCommand(info, ctx, 'ru-RU')
+            (info, ctx) => handleTTSCommand(info, ctx, 'ru')
         )
     );
 
@@ -120,7 +120,7 @@ export default function moduleInit(mod: BotModule) {
         new ChatCmdListener(
             ['tts-vi'],
             { usage: 'tts-vi [텍스트]', description: 'tts (베트남어 vi-VN)' },
-            (info, ctx) => handleTTSCommand(info, ctx, 'vi-VN')
+            (info, ctx) => handleTTSCommand(info, ctx, 'vi')
         )
     );
 
@@ -128,7 +128,7 @@ export default function moduleInit(mod: BotModule) {
         new ChatCmdListener(
             ['tts-zu'],
             { usage: 'tts-zu [텍스트]', description: 'tts (줄루어 zu-ZA)' },
-            (info, ctx) => handleTTSCommand(info, ctx, 'zu-ZA')
+            (info, ctx) => handleTTSCommand(info, ctx, 'zu')
         )
     );
 
@@ -136,7 +136,7 @@ export default function moduleInit(mod: BotModule) {
         new ChatCmdListener(
             ['tts-no'],
             { usage: 'tts-no [텍스트]', description: 'tts (노르웨이어 no-NO)' },
-            (info, ctx) => handleTTSCommand(info, ctx, 'no-NO')
+            (info, ctx) => handleTTSCommand(info, ctx, 'no')
         )
     );
 
@@ -144,7 +144,7 @@ export default function moduleInit(mod: BotModule) {
         new ChatCmdListener(
             ['tts-mn'],
             { usage: 'tts-mn [텍스트]', description: 'tts (몽골어 mn-MN)' },
-            (info, ctx) => handleTTSCommand(info, ctx, 'mn-MN')
+            (info, ctx) => handleTTSCommand(info, ctx, 'mn')
         )
     );
 
@@ -152,7 +152,7 @@ export default function moduleInit(mod: BotModule) {
         new ChatCmdListener(
             ['tts-ne'],
             { usage: 'tts-ne [텍스트]', description: 'tts (네팔어 ne-NP)' },
-            (info, ctx) => handleTTSCommand(info, ctx, 'ne-NP')
+            (info, ctx) => handleTTSCommand(info, ctx, 'ne')
         )
     );
 
@@ -160,7 +160,7 @@ export default function moduleInit(mod: BotModule) {
         new ChatCmdListener(
             ['tts-pt'],
             { usage: 'tts-pt [텍스트]', description: 'tts (포르투갈어 pt-PT)' },
-            (info, ctx) => handleTTSCommand(info, ctx, 'pt-PT')
+            (info, ctx) => handleTTSCommand(info, ctx, 'pt')
         )
     );
 
@@ -168,7 +168,7 @@ export default function moduleInit(mod: BotModule) {
         new ChatCmdListener(
             ['tts-sv'],
             { usage: 'tts-sv [텍스트]', description: 'tts (스웨덴어 sv-SE)' },
-            (info, ctx) => handleTTSCommand(info, ctx, 'sv-SE')
+            (info, ctx) => handleTTSCommand(info, ctx, 'sv')
         )
     );
 }
