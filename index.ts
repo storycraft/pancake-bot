@@ -62,6 +62,9 @@ async function main(credential: BotCredential) {
             loader.load('hash'),
             loader.load('tts'),
             loader.load('images'),
+            loader.load('emot-extract', {
+                decryptKey: process.env['EMOT_EXTRACT_KEY'] ? Buffer.from(process.env['EMOT_EXTRACT_KEY'], 'base64') : null
+            }),
             // 모듈 미완성으로 인해 비 활성화
             // loader.load('school-meal', { apiKey: process.env['BOT_SCHOOL_MEAL_API'] }),
         ]);
