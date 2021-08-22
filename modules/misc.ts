@@ -4,11 +4,12 @@
  * Copyright (c) storycraft. Licensed under the MIT Licence.
  */
 
-import { ChatBuilder, KnownChatType, MentionContent, ReplyAttachment, ReplyContent, TalkChannel } from "node-kakao";
+import { ChatBuilder, KnownChatType, Long, MentionContent, ReplyAttachment, ReplyContent, TalkChannel, TalkChatData } from "node-kakao";
 import { BotModule, ModuleDescriptor, TalkContext } from "../api/bot";
 import { ChatCmdListener, CommandInfo } from "../api/command";
 import fetch from 'node-fetch';
 import { Isolate } from "isolated-vm";
+import { LONG_CHAT_SPLITTER } from "../api/util";
 
 export const MODULE_DESC: ModuleDescriptor = {
 
@@ -65,6 +66,22 @@ export default function moduleInit(mod: BotModule) {
             ['exec'],
             { usage: 'exec (코드)', description: '샌드박스 코드 실행기 (실행 제한 30초)' },
             execCommand
+        )
+    );
+
+    mod.commandHandler.any.addListener(
+        new ChatCmdListener(
+            ['url'],
+            { usage: 'url', description: '채팅 사진/동영상/파일 링크 가져오기' },
+            urlCommand
+        )
+    );
+
+    mod.commandHandler.any.addListener(
+        new ChatCmdListener(
+            ['profile'],
+            { usage: 'profile [유저]', description: '유저 프로필 사진 가져오기' },
+            profileCommand
         )
     );
 
@@ -200,4 +217,91 @@ function readersCommand(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
     }
     
     ctx.channel.sendChat(builder.build(KnownChatType.REPLY));
+}
+
+async function urlCommand(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
+    if (ctx.data.originalType !== KnownChatType.REPLY) {
+        ctx.channel.sendChat(
+            new ChatBuilder()
+            .append(new ReplyContent(ctx.data.chat))
+            .text('확인할 채팅을 답장기능을 통해 선택해주세요')
+            .build(KnownChatType.REPLY)
+        );
+    } else {
+        const reply = ctx.data.attachment<ReplyAttachment>();
+        const logId = reply['src_logId'];
+
+        if (logId) {
+            const chat = await ctx.channel.chatListStore.get(logId);
+            
+            if (!chat) {
+                ctx.channel.sendChat(
+                    new ChatBuilder()
+                    .append(new ReplyContent(ctx.data.chat))
+                    .text('선택된 메세지를 불러오지 못했습니다')
+                    .build(KnownChatType.REPLY)
+                );
+            } else {
+                const data = new TalkChatData(chat);
+                const medias = data.medias;
+
+                let text = `url 목록 (${medias.length})${LONG_CHAT_SPLITTER}\n`;
+                for (let i = 0; i < medias.length; i++) {
+                    const media = medias[i];
+                    text += `\n(${i}): ${media.url}`;
+                }
+
+                await ctx.channel.sendMedia(KnownChatType.TEXT, {
+                    data: Buffer.from(text),
+                    name: 'list.txt',
+                    ext: 'txt'
+                });
+            }
+        } else {
+            ctx.channel.sendChat(
+                new ChatBuilder()
+                .append(new ReplyContent(ctx.data.chat))
+                .text('선택한 메세지 정보에 오류가 있습니다')
+                .build(KnownChatType.REPLY)
+            );
+        }
+    }
+}
+
+async function profileCommand(info: CommandInfo, ctx: TalkContext<TalkChannel>) {
+    let list: Long[] = [];
+    if (ctx.data.originalType === KnownChatType.REPLY) {
+        const reply = ctx.data.attachment<ReplyAttachment>();
+
+        if (reply.src_userId) {
+            list.push(reply.src_userId);
+        }
+    }
+
+    for (const mention of ctx.data.mentions) {
+        list.push(Long.fromValue(mention.user_id));
+    }
+
+    if (list.length < 1) {
+        ctx.channel.sendChat(
+            new ChatBuilder()
+            .append(new ReplyContent(ctx.data.chat))
+            .text('맨션이나 답장 기능을 통해 유저를 선택해주세요')
+            .build(KnownChatType.REPLY)
+        );
+    }
+    
+    const userList = list.map(id => ctx.channel.getUserInfo({ userId: id }));
+    let text = `프로필 목록${LONG_CHAT_SPLITTER}\n`;
+    for (const user of userList) {
+        if (!user) continue;
+
+        text += `\n${user.nickname} : ${user.originalProfileURL}`;
+    }
+
+    await ctx.channel.sendMedia(KnownChatType.TEXT, {
+        data: Buffer.from(text),
+        name: 'list.txt',
+        ext: 'txt'
+    });
 }
