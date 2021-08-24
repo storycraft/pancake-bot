@@ -88,7 +88,7 @@ export function createChatImageProcessor<C extends TalkChannel>(
 
                     res.push({
                         name: 'result.gif',
-                        ext: 'png',
+                        ext: 'gif',
                         data: encoded.buffer,
                         width: encoded.width,
                         height: encoded.height
