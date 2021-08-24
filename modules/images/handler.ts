@@ -80,9 +80,9 @@ export function createChatImageProcessor<C extends TalkChannel>(
                         const jimpFrame = GifUtil.shareAsJimp(jimp, frame);
 
                         await handler(info, { image: jimpFrame, talkCtx: ctx });
-                    }
 
-                    GifUtil.quantizeDekker(gif.frames, 256);
+                        GifUtil.quantizeSorokin(frame, 256);
+                    }
 
                     const encoded = await codec.encodeGif(gif.frames, { loops: gif.loops, colorScope: gif.colorScope });
 
